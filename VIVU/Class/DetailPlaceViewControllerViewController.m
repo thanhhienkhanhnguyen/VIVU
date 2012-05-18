@@ -111,8 +111,14 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    self.btnPhoto.hidden =YES;
+    self.btnTips.hidden = YES;
 }
-
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+   
+}
 - (void)viewDidUnload
 {
     [super viewDidUnload];
@@ -249,11 +255,11 @@
         }
     }
     if ([arrayImages count]>4) {
-//        if (!imgViewController) {
-//            self.imgViewController = [[ImagesViewController alloc]initWithNibName:@"ImagesViewController" bundle:nil];
-//            imgViewController.delegate =self;
-//        }
-//        imgViewController.arrayPhotos = arrayImages;
+        if (!imgViewController) {
+            self.imgViewController = [[ImagesViewController alloc]initWithNibName:@"ImagesViewController" bundle:nil];
+            imgViewController.delegate =self;
+        }
+        imgViewController.arrayPhotos = arrayImages;
         UIButton *btnMorePhotos = [[UIButton alloc]init];
         
         CGRect frame ;
@@ -375,7 +381,8 @@
     }
     self.btnTips.frame = frame;
     [self addTipsToViewDetail:self.btnTips.frame.origin.y+23];
-    
+    self.btnTips.hidden = NO;
+    self.btnPhoto.hidden = NO;
     
 }
 -(void)configureView
@@ -499,34 +506,43 @@
 #pragma mark PhotoScrollView Controller
 -(void)showMorePhotos:(id)sender
 {
-    if (!photosViewController) {
-        photosViewController = [[PhotosViewController alloc]initWithNibName:@"PhotosViewController" bundle:nil];
-    }
-    photosViewController.modalPresentationStyle = UIModalPresentationFullScreen;
-    photosViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    photosViewController.numberPhotos =self.numberPhotos;
-    
-    [self presentModalViewController:photosViewController animated:YES];
-//    [photosViewController createBasicViewPhotos];
-    if (!requestMorePhotos) {
-        requestMorePhotos = [[MorePhotosProvider alloc]init];
-        requestMorePhotos.delegateMorePhotos = self;
-    }
-    [requestMorePhotos configURLByVenueID:[dictInfo objectForKey:@"id"]];
-    [requestMorePhotos requestData];
-//    if (imgViewController) {
-//        CGRect frame = self.view.frame;
-//        frame.origin.x =500;
-//        imgViewController.view.frame = frame;
-//        [imgViewController.view setTag:TAG_IMAGE_VIEW];
-//        [self.view addSubview:imgViewController.view];
-//        imgViewController.view.frame = frame;
-//        [imgViewController configureView];
-//        [UIView beginAnimations:@"Show images View" context:nil];
-//        imgViewController.view.frame = self.view.frame;
-//        [UIView commitAnimations];
+       if (![VIVUtilities isIpadDevice]) {
+        //Iphone Device
+           if (!photosViewController) {
+              photosViewController = [[PhotosViewController alloc]initWithNibName:@"PhotosViewController" bundle:nil];
+           }
+           photosViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+           photosViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+           photosViewController.numberPhotos =self.numberPhotos;
+           
+           [self presentModalViewController:photosViewController animated:YES];
+           //    [photosViewController createBasicViewPhotos];
+           if (!requestMorePhotos) {
+               requestMorePhotos = [[MorePhotosProvider alloc]init];
+               requestMorePhotos.delegateMorePhotos = self;
+           }
+           [requestMorePhotos configURLByVenueID:[dictInfo objectForKey:@"id"]];
+           [requestMorePhotos requestData];
+
+    }else {
+        //ipad
+//        if (!photosViewController) {
+//            photosViewController = [[PhotosViewController alloc]initWithNibName:@"PhotosViewController" bundle:nil];
+//        }
+//        photosViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+//        photosViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+//        photosViewController.numberPhotos =self.numberPhotos;
 //        
-//    }    
+//        [self presentModalViewController:photosViewController animated:YES];
+//        //    [photosViewController createBasicViewPhotos];
+//        if (!requestMorePhotos) {
+//            requestMorePhotos = [[MorePhotosProvider alloc]init];
+//            requestMorePhotos.delegateMorePhotos = self;
+//        }
+//        [requestMorePhotos configURLByVenueID:[dictInfo objectForKey:@"id"]];
+//        [requestMorePhotos requestData];
+
+    }
     
     
 }

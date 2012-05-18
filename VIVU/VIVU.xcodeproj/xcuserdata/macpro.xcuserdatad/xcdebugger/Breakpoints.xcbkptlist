@@ -30,19 +30,6 @@
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
-         shouldBeEnabled = "Yes"
-         ignoreCount = "0"
-         continueAfterRunningActions = "No"
-         filePath = "VIVU/GroupAnnotation/MKMapView+AnnotationGrouping.m"
-         timestampString = "358941259.296623"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "83"
-         endingLineNumber = "83"
-         landmarkName = "-addAnnotations:withGroupDistance:"
-         landmarkType = "5">
-      </FileBreakpoint>
-      <FileBreakpoint
          shouldBeEnabled = "No"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
@@ -59,26 +46,13 @@
          shouldBeEnabled = "Yes"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "VIVU/ViewController.m"
-         timestampString = "358942611.544208"
+         filePath = "Ipad/DetailPlaceViewControllerIpad.m"
+         timestampString = "359000741.725898"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "719"
-         endingLineNumber = "719"
-         landmarkName = "-initAnnotations:"
-         landmarkType = "5">
-      </FileBreakpoint>
-      <FileBreakpoint
-         shouldBeEnabled = "Yes"
-         ignoreCount = "0"
-         continueAfterRunningActions = "No"
-         filePath = "VIVU/GroupAnnotation/MKMapView+AnnotationGrouping.m"
-         timestampString = "358942624.954215"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "100"
-         endingLineNumber = "100"
-         landmarkName = "-addAnnotations:withGroupDistance:"
+         startingLineNumber = "483"
+         endingLineNumber = "483"
+         landmarkName = "-showDetailPhoto:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

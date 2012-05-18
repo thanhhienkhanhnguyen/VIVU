@@ -71,7 +71,7 @@
         NSDictionary *subPhoto = [dictVenue objectForKey:@"photos"];
         NSNumber *count =[NSNumber numberWithInt:0];
         arrGroup = [subPhoto objectForKey:@"groups"];
-        if ([arrGroup count]>0) {
+        if ([arrGroup count]>1) {
             NSDictionary *photosDict = [arrGroup objectAtIndex:1];
            
             NSArray *items = [photosDict objectForKey:@"items"];

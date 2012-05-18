@@ -856,28 +856,28 @@
 }
 -(IBAction)searchTableView:(id)sender
 {
-    UINavigationController *navi = nil;
-    allowLoadingMap = NO;
-    self.navigationController.navigationBarHidden = NO;
+//    UINavigationController *navi = nil;
+//    allowLoadingMap = NO;
+//    self.navigationController.navigationBarHidden = NO;
     if (!self.searchController) {
         searchController =[[SearchViewController alloc]initWithNibName:@"SearchViewController" bundle:nil];
         searchController.delegate =self;
         if (tempDataSourceTableView) {
             searchController.dataSourceTableView = tempDataSourceTableView;
         }
-        navi = [[UINavigationController alloc]initWithRootViewController:searchController];
+//        navi = [[UINavigationController alloc]initWithRootViewController:searchController];
     }else {
         searchController.dataSourceTableView = tempDataSourceTableView;
         [searchController.resultDatasource removeAllObjects];
     }
 //    self.navigationController.navigationBarHidden = NO;
-    if (!navi) {
-        navi = [[UINavigationController alloc]initWithRootViewController:searchController];
-    }
-    navi.title =@"Search";
+//    if (!navi) {
+//        navi = [[UINavigationController alloc]initWithRootViewController:searchController];
+//    }
+//    navi.title =@"Search";
     searchController.modalPresentationStyle = UIModalPresentationFullScreen;
     searchController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    [self presentModalViewController:navi animated:YES];
+    [self presentModalViewController:searchController animated:YES];
 
     
     
@@ -1479,11 +1479,7 @@
     }
 }
 #pragma mark SearchTableView Delegate
--(void) hiddenBar
-{
-    
-    self.navigationController.navigationBarHidden = YES;
-}
+
 -(CLLocation *) getCurrentCoorLocation
 {
     return  nil;
@@ -1590,7 +1586,7 @@
 -(void) DetailPlaceDidFinishParsing:(DetailPlaceProvider *)provider
 {
 //    [self stopSpinner:self.view];
-    if (provider.resultContent) {
+    if (provider.resultContent&&[provider.resultContent count]>0) {
         self.arrayImages = [NSMutableArray array];
         BOOL isUserMostActive = YES;
         BOOL isBigImage = NO;
@@ -1848,8 +1844,8 @@
 -(void)SearchPlaceDidFinishParsing:(SearchPlaceProvider *)provider
 {
     [self stopSpinner:self.view];
-    if (!dataSourceInTableView) {
-        self.dataSourceInTableView =[[NSMutableArray alloc]init];
+    if (!self.dataSourceInTableView) {
+        self.dataSourceInTableView =[NSMutableArray array];
     }
     if (!placeTableViewController) {
         self.placeTableViewController =[[ShowAllPlaceViewController alloc]initWithNibName:@"ShowAllPlaceViewController" bundle:nil];
@@ -1907,7 +1903,7 @@
                             }
 
                         }
-                                            }
+                    }
                     if (!found) {
                         // newlocation chua ton tai ->append
                         ImagesProfileProvider *imageProvider =[[ImagesProfileProvider alloc]init];
@@ -1936,7 +1932,7 @@
         tempDataSourceTableView = provider.resultContent;
         if ([VIVUtilities isIpadDevice]==NO) {
             if (!placeTableViewController.dataSourceTableView) {
-                dataSourceInTableView = provider.resultContent;
+                self.dataSourceInTableView = [NSMutableArray arrayWithArray:provider.resultContent];
                 //            placeTableViewController.dataSourceTableView =[NSMutableArray arrayWithArray:dataSourceInTableView];
                 placeTableViewController.dataSourceTableView = tempDataSourceTableView;
                 if (arrayImagesProvider) {
@@ -1947,13 +1943,11 @@
                 [placeTableViewController convertDataSourceToGroup];
                 [placeTableViewController.tableView reloadData];
                 
-                //            [self initAnnotations:dataSourceInTableView];
                 [self initAnnotations:tempDataSourceTableView];
                 [self refreshAllAnnotation];
                 
             }else {
                 //load more location
-                //            placeTableViewController.dataSourceTableView =[NSMutableArray arrayWithArray:dataSourceInTableView];
                 placeTableViewController.dataSourceTableView = tempDataSourceTableView;
                 placeTableViewController.arraySourceFavicon =[NSMutableArray arrayWithArray:arrayImagesProvider];
                 
@@ -1971,7 +1965,7 @@
 
         }else {
             if (!placeTableViewControllerIpad.dataSourceTableView) {
-                dataSourceInTableView = provider.resultContent;
+                self.dataSourceInTableView = [NSMutableArray arrayWithArray: provider.resultContent];
                 //            placeTableViewController.dataSourceTableView =[NSMutableArray arrayWithArray:dataSourceInTableView];
                 placeTableViewControllerIpad.dataSourceTableView = tempDataSourceTableView;
                 if (arrayImagesProvider) {
@@ -1982,7 +1976,6 @@
 //                [placeTableViewControllerIpad convertDataSourceToGroup];
                 [placeTableViewControllerIpad.tableView reloadData];
                 
-                //            [self initAnnotations:dataSourceInTableView];
                 [self initAnnotations:tempDataSourceTableView];
                 [self refreshAllAnnotation];
                 

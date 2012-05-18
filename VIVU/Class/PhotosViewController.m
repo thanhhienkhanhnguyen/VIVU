@@ -47,8 +47,13 @@
 
 -(IBAction)closeView:(id)sender
 {
-//    [self dismissModalViewControllerAnimated:YES];
-    [self.delegate closeMorePhoto];
+    if ([VIVUtilities isIpadDevice]) {
+        [self.delegate closeMorePhoto];
+    }else {
+        [self dismissModalViewControllerAnimated:YES];
+
+    }
+//        
 }
 -(void)reloadPhotoById:(NSString *)Id
 {
@@ -91,15 +96,26 @@
 -(void) loadPhotosViewDetail:(id)sender
 {
     if (!photosView) {
-        self.photosView = [[PhotosScrollViewController alloc]initWithNibName:@"PhotosScrollViewControllerIpad" bundle:nil];
-        photosView.delegate =self;
+        if ([VIVUtilities isIpadDevice]) {
+            photosView = [[PhotosScrollViewController alloc]initWithNibName:@"PhotosScrollViewControllerIpad" bundle:nil];
+            photosView.delegate =self;
+        }else {
+            photosView = [[PhotosScrollViewController alloc]initWithNibName:@"PhotosScrollViewController" bundle:nil];
+            photosView.delegate =self;
+        }
+       
     }
     photosView.arrayPhotos = arrayPhotos;
     photosView.currentPhotoId = ((CustomeButton*)sender).imageId;
     photosView.modalPresentationStyle = UIModalPresentationFullScreen;
     photosView.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    if ([VIVUtilities isIpadDevice]) {
+        [self.delegate loadDetailPhotos:photosView];
+    }else {
+        [self presentModalViewController:photosView animated:YES];
+    }
    
-    [self.delegate loadDetailPhotos:photosView];
+    
 }
 -(void) rePresentPopOver
 {
@@ -224,6 +240,13 @@
 
 -(void)createBasicViewPhotos
 {
+    CGRect frame = CGRectMake(320-50, 0, 50, 50);
+    UIButton *btnCloseShowMorePhotos = [[UIButton alloc]initWithFrame:frame];
+    [btnCloseShowMorePhotos setTitle:@"Close" forState:UIControlStateNormal];
+    [btnCloseShowMorePhotos addTarget:self action:@selector(closeView:) forControlEvents:UIControlEventTouchUpInside];
+    [btnCloseShowMorePhotos setImage:[UIImage imageNamed:@"btnMinus.png"] forState:UIControlStateNormal];
+    [self.scrollView addSubview:btnCloseShowMorePhotos];
+    [btnCloseShowMorePhotos release];
     
     if ([arrayPhotos count]>4||([arrayPhotos count]<=4&& isBelongToPopOver)) {
         //            NSLog(@"subImages :%d",[arrayPhotos count]);
@@ -255,6 +278,8 @@
                     
                 }else {
                     frame = CGRectMake(20+(j-1)*(FLEXIBLE_SPACE+WIDTH_IMAGE), 10+ i*(FLEXIBLE_SPACE+WIDTH_IMAGE), WIDTH_IMAGE, WIDTH_IMAGE);
+                    btnClose.hidden = NO;
+                    btnClose.userInteractionEnabled = YES;
                 }
                 
                 if (i==row-1) {

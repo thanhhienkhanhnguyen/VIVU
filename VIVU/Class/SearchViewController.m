@@ -7,6 +7,7 @@
 //
 
 #import "SearchViewController.h"
+#define NUMBER_OF_CHEAT_ROW     10
 
 @interface SearchViewController ()
 
@@ -50,6 +51,8 @@
     self.title = @"Search";
     self.searchBarController.text =@"";
     [self.searchBarController becomeFirstResponder];
+    self.tableViewSearch.separatorStyle = UITableViewCellSeparatorStyleNone;
+//    [self.searchBarController resignFirstResponder];
     
 }
 - (void)viewDidLoad
@@ -57,17 +60,27 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     UIBarButtonItem *cancelBtn =[[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelEvent:)];
-    self.navigationItem.leftBarButtonItem =cancelBtn;
+//    self.navigationItem.leftBarButtonItem =cancelBtn;
     UIBarButtonItem *deleteBtn = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(deleteAllSearchResult:)];
 //    self.navigationItem.rightBarButtonItem = deleteBtn;
     [cancelBtn release];
     [deleteBtn release];
     
+    [self.tableViewSearch setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"info_bar.png"]]];
+//    self.tableViewSearch.backgroundView = [[[UIImageView alloc] initWithImage:[ [UIImage imageNamed:@"info_bar.png"] stretchableImageWithLeftCapWidth:0.0 topCapHeight:5.0] ]autorelease];
+    self.tableViewSearch.separatorStyle = UITableViewCellSeparatorStyleNone;
+   //    [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"info_bar.png"]]
+//    ];    
+}
+
+-(void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    [self dismissModalViewControllerAnimated:YES];
 }
 -(void)cancelEvent:(id) sender
 {
     [self dismissModalViewControllerAnimated:YES];
-    [self.delegate hiddenBar];
+    
 }
 -(void)deleteAllSearchResult:(id)sender
 {
@@ -107,16 +120,30 @@
 }
 -(void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    checkEdit = YES;
-    resultDatasource = [[NSMutableArray alloc]init];
+    
+    
+    if (resultDatasource) {
+        [resultDatasource removeAllObjects];
+    }else {
+        resultDatasource = [[NSMutableArray alloc]init];
+    }
+    
     for(NSDictionary *dictInfor in dataSourceTableView)
     {
         NSString *name = [dictInfor objectForKey:@"name"];
         if ([name hasPrefix:searchText]||[name rangeOfString:searchText].length>0){
-            [resultDatasource addObject:dictInfor];
+            if (![resultDatasource containsObject:dictInfor]) {
+                [resultDatasource addObject:dictInfor];
+            }
+            
         }
         
     }
+//    if ([resultDatasource count]>0) {
+//        self.tableViewSearch.separatorStyle= UITableViewCellSeparatorStyleNone;
+//    }else {
+//        self.tableViewSearch.separatorStyle= UITableViewCellSeparatorStyleSingleLine;
+//    }
     [self.tableViewSearch reloadData];
     
 }
@@ -132,7 +159,10 @@
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (resultDatasource) {
-        return [resultDatasource count];  
+        if ([resultDatasource count]>0) {
+            return ([resultDatasource count]+NUMBER_OF_CHEAT_ROW);  
+        }
+        
     }
     return 0;
       
@@ -146,29 +176,46 @@
     if (cell == nil) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
     }
-    NSDictionary *dictDetail = [resultDatasource  objectAtIndex:indexPath.row];
-    cell.textLabel.text = [dictDetail objectForKey:@"name"];
-    //    UILabel *distanceLabel = (UILabel *)[cell.contentView viewWithTag:SubDetail];
-    NSDictionary *location = [dictDetail objectForKey:@"location"];
-    NSString *distance = [location objectForKey:@"distance"];
-    NSString *temp = [NSString stringWithFormat:@"%@ m",distance];
-    //    distanceLabel.text = temp;
-    
-    cell.detailTextLabel.text = temp;
-    
-    NSString *filePath = [NSString stringWithFormat:@"%@/favicon/%@.favicon.ico",
-                          [VIVUtilities applicationDocumentsDirectory],
-                          [dictDetail objectForKey:@"type"]];
-    
-    UIImage *image = [UIImage imageWithContentsOfFile:filePath];
-    if (!image) {
-        //Image default
-        cell.imageView.image = [UIImage imageNamed:@"default_32.png"];
-        
-    }else {
-        cell.imageView.image = image;
-    }
+     cell.backgroundView =  [[[UIImageView alloc] initWithImage:[ [UIImage imageNamed:@"info_bar.png"] stretchableImageWithLeftCapWidth:0.0 topCapHeight:5.0] ]autorelease];
+    if ([resultDatasource count]>0) {
+        if (indexPath.row < ([self.tableViewSearch numberOfRowsInSection:0]-NUMBER_OF_CHEAT_ROW)) {
+            NSDictionary *dictDetail = [resultDatasource  objectAtIndex:indexPath.row];
+            cell.textLabel.text = [dictDetail objectForKey:@"name"];
+            //    UILabel *distanceLabel = (UILabel *)[cell.contentView viewWithTag:SubDetail];
+            NSDictionary *location = [dictDetail objectForKey:@"location"];
+            NSString *distance = [location objectForKey:@"distance"];
+            NSString *temp = [NSString stringWithFormat:@"%@ m",distance];
+            //    distanceLabel.text = temp;
+            
+            cell.detailTextLabel.text = temp;
+            cell.detailTextLabel.textColor =[UIColor whiteColor];
+            cell.detailTextLabel.font = [UIFont fontWithName:@"" size:12];
+            cell.textLabel.font =[UIFont fontWithName:@"" size:9];
+            cell.textLabel.textColor = [UIColor whiteColor];
+            [cell.detailTextLabel setBackgroundColor:[UIColor clearColor]];
+            [cell.textLabel setBackgroundColor:[UIColor clearColor]];
+            NSString *filePath = [NSString stringWithFormat:@"%@/favicon/%@.favicon.ico",
+                                  [VIVUtilities applicationDocumentsDirectory],
+                                  [dictDetail objectForKey:@"type"]];
+            
+            UIImage *image = [UIImage imageWithContentsOfFile:filePath];
+            if (!image) {
+                //Image default
+                cell.imageView.image = [UIImage imageNamed:@"default_32.png"];
+                
+            }else {
+                cell.imageView.image = image;
+            }
+            
+        }else {
+            cell.detailTextLabel.text = @"";
+            cell.textLabel.text = @"";
+            cell.imageView.image = nil;
+            
+        }
 
+    }
+      
     
     return  cell;
 }
@@ -176,10 +223,13 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
-    NSDictionary *dictDetail = [resultDatasource objectAtIndex:indexPath.row];
-    [self dismissModalViewControllerAnimated:YES];
-    [self.delegate hiddenBar];
-    [self.delegate pushDetailViewControllerFromSearchView:dictDetail];
+    if (indexPath.row < ([self.tableViewSearch numberOfRowsInSection:0]-NUMBER_OF_CHEAT_ROW)) {
+        NSDictionary *dictDetail = [resultDatasource objectAtIndex:indexPath.row];
+        [self dismissModalViewControllerAnimated:YES];
+        //    [self.delegate hiddenBar];
+        [self.delegate pushDetailViewControllerFromSearchView:dictDetail];
+    }
+    
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

@@ -5,9 +5,9 @@
 //  Created by MacPro on 4/23/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
-#define NameTag   1000
-#define ImageTag  10001
-#define SubDetail 10002
+#define TAG_NAME       10000
+#define TAG_IMAGE      10001
+#define TAG_SUB_DETAIL 10002
 #define Button_Tag_Offset        10006
 #define TAG_DETAIL_VIEW_CONTROLLER 10007
 
@@ -51,6 +51,7 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+//    [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"info_bar.png"]]];
        
 }
 
@@ -239,7 +240,7 @@
 -(void) convertDataSourceToGroup
 {
      if (self.dataSourceTableView) {
-         dataSourceGroupTableView = [NSMutableArray array];
+         self.dataSourceGroupTableView = [NSMutableArray array];
          SlideGroupSource *group = nil;
          for (NSDictionary *dictDetail in self.dataSourceTableView) {
              if ([dictDetail isKindOfClass:[NSDictionary class]]) {
@@ -296,7 +297,15 @@
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
     if (self.dataSourceGroupTableView) {
-        return 22;
+        SlideGroupSource *parent = [dataSourceGroupTableView objectAtIndex:section];
+        if ([parent isKindOfClass:[SlideGroupSource class]]) {
+            if ([parent.childs count]>0) {
+                return 22;
+            }else {
+                return 0;
+            }            
+        }
+        return 0;
     }else {
         return 0;
     }
@@ -319,12 +328,13 @@
 {
   
     UIView *header = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 22)];
-   header.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"collapse_bar"]];
+   header.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"category_bar.png"]];
 //    header.backgroundColor = [UIColor clearColor];
-    UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(20, 0, tableView.frame.size.width - 20, 22)];
+    UILabel *title = [[UILabel alloc] initWithFrame:CGRectMake(44, 0, tableView.frame.size.width - 20, 22)];
     title.backgroundColor = [UIColor clearColor];
     title.font = [UIFont boldSystemFontOfSize:14];
-    title.textColor = [UIColor colorWithRed:121.0f/255.0f green:127.0f/255.0f blue:144.0f/255.0f alpha:1];
+//    title.textColor = [UIColor colorWithRed:121.0f/255.0f green:127.0f/255.0f blue:144.0f/255.0f alpha:1];
+    title.textColor = [UIColor whiteColor];
     title.shadowColor = [UIColor colorWithRed:57.0f/255.0f green:64.0f/255.0f blue:85.0f/255.0f alpha:1];
     title.shadowOffset = CGSizeMake(0, 1);
     title.textAlignment = UITextAlignmentLeft;
@@ -335,14 +345,14 @@
     tf.origin.y = (22 - tf.size.height) * 0.5f;
     title.frame = tf;
     [title release];
-    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 20, 22)];
+    UIButton *button = [[UIButton alloc] initWithFrame:CGRectMake(22, 0, 20, 22)];
     
     SlideGroupSource *parent = [dataSourceGroupTableView objectAtIndex:section];
     if ([parent isKindOfClass:[SlideGroupSource class]]) {
         if (parent.isExpanded) {
-            [button setImage:[UIImage imageNamed:@"btn_02"] forState:UIControlStateNormal];
+            [button setImage:[UIImage imageNamed:@"expand.png"] forState:UIControlStateNormal];
         }else {
-            [button setImage:[UIImage imageNamed:@"btn_01"] forState:UIControlStateNormal];
+            [button setImage:[UIImage imageNamed:@"collapse.png"] forState:UIControlStateNormal];
         }
 
     }
@@ -355,7 +365,7 @@
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     if (self.dataSourceGroupTableView){
-        return [dataSourceTableView count];
+        return [dataSourceGroupTableView count];
     }else {
         return 1;
     }
@@ -367,21 +377,41 @@
     UITableViewCell *cell = [tableView12 dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier] autorelease];
-        //        UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(40, 5, (cell.frame.size.width - 40) - 5, 20)];
-        //        [label setTag:NameTag];
-        //        label.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:13];
-        //        label.textColor = [UIColor colorWithRed:66.0f/255.0f green:66.0f/255.0f blue:66.0f/255.0f alpha:1]; 
-        //        [cell.contentView addSubview:label];
-        //        [label release];
-        //        label = [[UILabel alloc]initWithFrame:CGRectMake(40, 25,  (cell.frame.size.width - 40) - 5, 20)];
-        //        [label setTag:SubDetail];
-        //        label.textColor = [UIColor colorWithRed:66.0f/255.0f green:66.0f/255.0f blue:66.0f/255.0f alpha:1]; 
-        //        label.font = [UIFont fontWithName:@"HelveticaNeue" size:12];
-        //        [cell.contentView addSubview:label];
-        //        [label release];
+        
+        UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake(60, 5, self.view.frame.size.width-60-5, 30)];
+//        CGRect frame = label.frame;
+//        frame.origin.x = label.frame.origin.x +22;
+//        label.frame = frame;
+        [label setTag:TAG_NAME];
+        label.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:12];
+        label.textColor = [UIColor whiteColor]; 
+        [label setBackgroundColor:[UIColor clearColor]];
+        [cell.contentView addSubview:label];
+        [label release];
+        label = [[UILabel alloc]initWithFrame:CGRectMake(60, 35, self.view.frame.size.width-60-5, 9)];
+        [label setTag:TAG_SUB_DETAIL];
+        label.textColor = [UIColor whiteColor]; 
+        [label setBackgroundColor:[UIColor clearColor]];
+        label.font = [UIFont fontWithName:@"HelveticaNeue" size:9];
+        
+//        frame = label.frame;
+//        frame.origin.x = label.frame.origin.x +22;
+//        label.frame = frame;
+        
+        [cell.contentView addSubview:label];
+        [label release];
+        UIImageView *image = [[UIImageView alloc]initWithFrame:CGRectMake(5+20, 2, 33, 40)];
+//        frame = image.frame;
+//        frame.origin.x = cell.imageView.frame.origin.x +22;
+//        image.frame = frame;
+        [image setTag:TAG_IMAGE];
+        [cell.contentView addSubview:image];
+        [image release];
+        
+    
         
     }
-
+   
     NSDictionary *dictDetail = nil;
     id item = [dataSourceTableView objectAtIndex:indexPath.section];
     if ([item isKindOfClass:[SlideGroupSource class]]) {
@@ -392,27 +422,65 @@
     
 
     if ([dictDetail isKindOfClass:[NSDictionary class]]) {
-        cell.textLabel.text = [dictDetail objectForKey:@"name"];
-        //    UILabel *distanceLabel = (UILabel *)[cell.contentView viewWithTag:SubDetail];
-        NSDictionary *location = [dictDetail objectForKey:@"location"];
-        NSString *distance = [location objectForKey:@"distance"];
-        NSString *temp = [NSString stringWithFormat:@"%@ m",distance];
-        //    distanceLabel.text = temp;
-        
-        cell.detailTextLabel.text = temp;
-        
-        NSString *filePath = [NSString stringWithFormat:@"%@/favicon/%@.favicon.ico",
-                              [VIVUtilities applicationDocumentsDirectory],
-                              [dictDetail objectForKey:@"type"]];
-        
-        UIImage *image = [UIImage imageWithContentsOfFile:filePath];
-        if (!image) {
-            //Image default
-            cell.imageView.image = [UIImage imageNamed:@"default_32.png"];
-          
+        if (dataSourceGroupTableView) {
+            // grouped
+             cell.backgroundView =  [[[UIImageView alloc] initWithImage:[ [UIImage imageNamed:@"info_bar.png"] stretchableImageWithLeftCapWidth:0.0 topCapHeight:5.0] ]autorelease];
+            UILabel *label = (UILabel*)[cell.contentView viewWithTag:TAG_NAME];
+            label.text = [dictDetail objectForKey:@"name"];
+            label = (UILabel *)[cell.contentView viewWithTag:TAG_SUB_DETAIL];
+            NSDictionary *location = [dictDetail objectForKey:@"location"];
+            NSString *distance = [location objectForKey:@"distance"];
+            NSString *temp = [NSString stringWithFormat:@"%@ m",distance];
+            //    distanceLabel.text = temp;
+            
+//            cell.detailTextLabel.text = temp;
+            label.text = temp;
+            
+            UIImageView *imageCell = (UIImageView*)[cell.contentView viewWithTag:TAG_IMAGE];
+            
+            NSString *filePath = [NSString stringWithFormat:@"%@/favicon/%@.favicon.ico",
+                                  [VIVUtilities applicationDocumentsDirectory],
+                                  [dictDetail objectForKey:@"type"]];
+            
+            UIImage *image = [UIImage imageWithContentsOfFile:filePath];
+            if (!image) {
+                //Image default
+                imageCell.image = [UIImage imageNamed:@"default_32.png"];
+                
+            }else {
+                imageCell.image = image;
+            }
+
         }else {
-            cell.imageView.image = image;
+            // ko group
+            
+            cell.textLabel.text = [dictDetail objectForKey:@"name"];
+            //    UILabel *distanceLabel = (UILabel *)[cell.contentView viewWithTag:SubDetail];
+            NSDictionary *location = [dictDetail objectForKey:@"location"];
+            NSString *distance = [location objectForKey:@"distance"];
+            NSString *temp = [NSString stringWithFormat:@"%@ m",distance];
+            //    distanceLabel.text = temp;
+            
+            cell.detailTextLabel.text = temp;
+//            cell.detailTextLabel.textColor =[UIColor whiteColor];
+//            cell.textLabel.textColor = [UIColor whiteColor];
+                        
+            NSString *filePath = [NSString stringWithFormat:@"%@/favicon/%@.favicon.ico",
+                                  [VIVUtilities applicationDocumentsDirectory],
+                                  [dictDetail objectForKey:@"type"]];
+            
+            UIImage *image = [UIImage imageWithContentsOfFile:filePath];
+            if (!image) {
+                //Image default
+                cell.imageView.image = [UIImage imageNamed:@"default_32.png"];
+                
+            }else {
+                cell.imageView.image = image;
+            }
+           
+
         }
+        
 
     }
     

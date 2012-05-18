@@ -18,7 +18,7 @@
 
 
 -(void) pushDetailViewControllerFromSearchView:(NSDictionary *)dictDetail;
--(void)hiddenBar;
+
 
 @end
 @interface SearchViewController : UIViewController<UISearchBarDelegate,UITableViewDelegate,UITableViewDataSource>
