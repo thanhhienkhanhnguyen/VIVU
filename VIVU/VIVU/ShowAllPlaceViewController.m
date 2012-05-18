@@ -247,10 +247,12 @@
                  group = [SlideGroupSource findGroupName:[dictDetail objectForKey:@"parentCategory"] inArray:dataSourceGroupTableView];
                  if (!group) {
                      group = [[SlideGroupSource alloc]initWithGroupName:[dictDetail objectForKey:@"parentCategory"]];
-                     group.isExpanded = YES;
-                     [dataSourceGroupTableView addObject:group];
+                     if ([group isKindOfClass:[SlideGroupSource class]]) {
+                         group.isExpanded = YES;
+                         [dataSourceGroupTableView addObject:group];
+                         
+                     } 
                      [group release];
-                     
                  }else {
                      [group.childs addObject:dictDetail];
                  }
@@ -270,8 +272,11 @@
     NSInteger tag = [sender tag];
     NSInteger count = tag - Button_Tag_Offset;
     SlideGroupSource *parent = [dataSourceTableView objectAtIndex:count];
-    parent.isExpanded = !parent.isExpanded;
-    [self.tableView reloadData];
+    if ([parent isKindOfClass:[SlideGroupSource class]]) {
+        parent.isExpanded = !parent.isExpanded;
+        [self.tableView reloadData];
+    }
+   
 }
 #pragma mark TableView Delegate
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath

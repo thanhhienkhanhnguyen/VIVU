@@ -182,12 +182,18 @@
 //    if ([VIVUtilities isIpadDevice]) {
 //        [self.delegate  rePresentPopOver];
 //    }  
-//    [self dismissModalViewControllerAnimated:YES];
-    [self dismissViewControllerAnimated:YES completion:^{
-        if ([VIVUtilities isIpadDevice]) {
-            [self.delegate  rePresentPopOver];
-        }  
-    } ];
+    
+    if ([VIVUtilities isIpadDevice]) {
+        [self dismissViewControllerAnimated:YES completion:^{
+            if ([VIVUtilities isIpadDevice]) {
+                [self.delegate  rePresentPopOver];
+            }  
+        } ];
+    }else {
+        [self dismissModalViewControllerAnimated:YES];
+    }
+//    
+    
     
 }
 -(void) loadPreImage:(NSString *)Id
