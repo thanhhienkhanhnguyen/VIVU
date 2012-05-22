@@ -211,15 +211,7 @@
         
     }
 }
-- (UIImage *)scaleImage:(UIImage *)image withSize:(CGSize)size
-{
-	//UIGraphicsBeginImageContext(size);
-	UIGraphicsBeginImageContextWithOptions(size, NO, 2.0); //only apply for iOS 4 or upper
-    [image drawInRect:CGRectMake(0.0, 0.0, size.width, size.height)];
-    UIImage *imageCopy = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-	return imageCopy;
-}
+
 #pragma mark MK MapView Delegate
 - (double)longitudeToPixelSpaceX:(double)longitude
 {
@@ -389,6 +381,7 @@
             [showGroupTableViewIphone.cheatView.layer setBorderColor:[UIColor greenColor].CGColor];
             [showGroupTableViewIphone.cheatView.layer setBorderWidth:2.0f];
             [showGroupTableViewIphone.cheatView.layer setCornerRadius:5.0f];
+            [self.mapView deselectAnnotation:view.annotation animated:YES];
             
                        
 
@@ -419,7 +412,8 @@
                 UINavigationController *content = [[UINavigationController alloc] initWithRootViewController:showAllPlaceTableViewIpad];
                 popoverController = [[UIPopoverController alloc] initWithContentViewController:showAllPlaceTableViewIpad.navigationController];
                 popoverController.delegate = self;
-                CGSize popOverSize = [showAllPlaceTableViewIpad sizeInPopoverView];
+//                CGSize popOverSize = [showAllPlaceTableViewIpad sizeInPopoverView];
+                CGSize popOverSize = CGSizeMake(330, 330);
                 popoverController.popoverContentSize = popOverSize; 
                 //                CGRect frame = detailVenueViewController.view.frame;
                 //                //        CGRect ff = self.view.bounds;
@@ -1201,6 +1195,9 @@
             if (detailViewController) {
                 [detailViewController reloadImageById:provider.categoryName];
             }
+            if (photosViewControllerMainView) {
+                [photosViewControllerMainView reloadPhotoById:provider.categoryName];
+            }
         }
         if (needDownload) {
             if (index>=1) {
@@ -1544,6 +1541,10 @@
     [self addDetailPlaceView:dictDetail];
 }
 #pragma mark ShowAllPlace Delegate
+-(void)closeRequestFromDetailView
+{
+    [VIVUtilities closeRequestImageProviderWithArrayProvider:arrayProvider];
+}
 -(void)disMissTableViewController:(id)sender
 {
 //    if (showGroupTableViewIphone.view.hidden ==NO) {
@@ -1562,7 +1563,7 @@
     
     if (![VIVUtilities isIpadDevice]) {
         if (!detailViewController) {
-            self.detailViewController = [[DetailPlaceViewControllerViewController alloc]initWithNibName:@"DetailPlaceViewControllerViewController" bundle:nil];
+            detailViewController = [[DetailPlaceViewControllerViewController alloc]initWithNibName:@"DetailPlaceViewControllerViewController" bundle:nil];
             detailViewController.delegate =self;
         } 
         
@@ -1889,7 +1890,10 @@
     UIView *subView = [self.view  viewWithTag:TAG_SHOW_DETAIL_VIEW];
     if (subView) {
         [subView removeFromSuperview];
-        detailViewController  = nil;
+        if (detailViewController) {
+            [detailViewController release];
+            detailViewController = nil;
+        }
     }
 }
 #pragma mark SearchPlace Delegate

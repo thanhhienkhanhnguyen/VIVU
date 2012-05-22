@@ -93,127 +93,14 @@
         }
     }
 }
-#pragma mark Load Images
--(void) initArrayProvider:(NSMutableArray *)arrayImages12  controller:(id)controller withMode:(ProvierMode)mode
++(UIImage *)scaleImage:(UIImage *)image withSize:(CGSize)size
 {
-    counter = 0;
-    
-    self.arrayProvider =[NSMutableArray array];
-    self.arrayImages = [NSMutableArray arrayWithArray:arrayImages12];
-    for (int i=0; i<[arrayImages count]; i++) {
-        NSDictionary *dictImage  = [arrayImages objectAtIndex:i];
-        if ([dictImage objectForKey:@"url"]) {
-            ImagesProfileProvider *provider =[[ImagesProfileProvider alloc]init];
-            provider.ImagesProfileDelegate = controller;
-            provider.categoryName = [dictImage objectForKey:@"id"];
-            provider.mode = ProviderModeImage;
-            //            if ([[dictImage objectForKey:@"isUserMostActive"]boolValue] ==YES) {
-            //                provider.mode =ProvierModeUserMostActive;
-            //                if ([dictImage objectForKey:@"isUserMostActive"]) {
-            ////                [detailViewController reloadAvatarMostActive];               
-            //                }
-            //            }
-            NSString *url = [dictImage objectForKey:@"url"];
-            //            if ([[dictImage objectForKey:@"isBigImage"]boolValue]==YES) {
-            //            
-            //            
-            //            }
-            [provider configURLByURL:url];
-            
-            [arrayProvider addObject:provider];
-            [provider release];
-            
-        }
-        
-    }
-    [self loadOneByOneImage];
-    
+	//UIGraphicsBeginImageContext(size);
+	UIGraphicsBeginImageContextWithOptions(size, NO, 2.0); //only apply for iOS 4 or upper
+    [image drawInRect:CGRectMake(0.0, 0.0, size.width, size.height)];
+    UIImage *imageCopy = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+	return imageCopy;
 }
--(void) loadImageFromArrayProviderWithCounter:(NSInteger)index 
-{
-    if (index >=0&&index< [arrayProvider count]) {
-        ImagesProfileProvider *provider = [arrayProvider objectAtIndex:index];
-        BOOL needDownload = YES;
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        if ([fileManager fileExistsAtPath:[NSString stringWithFormat:@"%@/favicon/image/%@.jpg",
-                                           [VIVUtilities applicationDocumentsDirectory],
-                                           provider.categoryName]]) {
-            needDownload = NO;
-        }
-        if (needDownload) {
-            if (index>=1) {
-                ImagesProfileProvider *preProvider = [arrayProvider objectAtIndex:(index-1)];
-                if (preProvider.finishLoad ==YES) {
-                    [provider requestData];
-                }else {
-                    //                        NSLog(@"%@",[preProvider getCurrentURL]);
-                }
-            }else {
-                [provider requestData];
-            }
-        }else {
-            // file exist -finishload = YES
-            provider.finishLoad = YES;
-            //            counter++;
-            //            [self loadOneByOneImage];
-        }
-    }
-    
-    
-}
--(void) loadOneByOneImage
-{
-    if (arrayProvider) {
-        [self loadImageFromArrayProviderWithCounter:counter];
-    }
-}
--(void)ImagesProfileProviderDidFinishParsing:(ImagesProfileProvider *)provider
-{
-    UIImage *image = [UIImage imageWithData:provider.returnData];
-    if (!image) {
-        //load icon defaul
-    }else {
-        
-        NSString *filePath =[NSString stringWithFormat:@"%@/favicon/image/%@.jpg",
-                             [VIVUtilities applicationDocumentsDirectory],
-                             provider.categoryName];
-        NSString *dirPath = [VIVUtilities applicationDocumentsDirectory];
-        dirPath = [dirPath stringByAppendingString:@"/favicon/image"];
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        BOOL isDirectory;
-        if (![fileManager fileExistsAtPath:dirPath isDirectory:&isDirectory])
-        {
-            NSError *error;
-            [fileManager createDirectoryAtPath:dirPath withIntermediateDirectories:NO attributes:nil error:&error];
-        }
-        if (![fileManager fileExistsAtPath:filePath]) {
-            UIImage *image = [UIImage imageWithData:provider.returnData];
-            if (image) {
-                if ([provider.returnData writeToFile:filePath atomically:YES]) {
-                    NSLog(@"Successful save data:%@", provider.categoryName);
-                    //wire to file successful. release cache data
-                    //                    [detailViewController reloadImageById:provider.categoryName];
-//                    for (int i =0; i<[arrayFullPhotos count]; i++) {
-//                        NSDictionary *dict = [arrayFullPhotos objectAtIndex:i];
-//                        if ([provider.categoryName isEqual:[dict objectForKey:@"id"]]) {
-//                            NSLog(@"index =%d",i);
-//                        }
-//                    }
-//                    [(ViewController*) reloadPhotoById:provider.categoryName];
-                    //                        [detailViewController configureView];
-                    provider.returnData = [NSData data];
-                }
-            }                
-        }
-        
-        
-    }
-    counter ++;
-    [self loadOneByOneImage];
-    
-}
--(void)ImagesProfileProviderDidFinishWithError:(NSError *)error provider:(ImagesProfileProvider *)provider
-{
-    
-}
+
 @end

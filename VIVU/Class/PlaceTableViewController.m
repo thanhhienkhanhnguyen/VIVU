@@ -217,7 +217,13 @@
 //        [label release];
         
     }
-    
+    [ dataSourceTableView  sortUsingComparator:^NSComparisonResult(id o1, id o2) {
+        NSDictionary *dict1 = [o1 objectForKey:@"location"];
+        NSDictionary *dict2 = [o2 objectForKey:@"location"];
+        NSNumber *urlStr1 = [dict1 objectForKey:@"distance"];
+        NSNumber *urlStr2 = [dict2 objectForKey:@"distance"];
+        return [urlStr1 compare:urlStr2];
+    }];
     NSDictionary *dictDetail = [dataSourceTableView objectAtIndex:indexPath.row];
 
 //    UILabel *nameLabel = (UILabel*)[cell.contentView viewWithTag:NameTag];

@@ -426,8 +426,32 @@
     NSDictionary *dictDetail = nil;
     id item = [dataSourceTableView objectAtIndex:indexPath.section];
     if ([item isKindOfClass:[SlideGroupSource class]]) {
+        
+        for (SlideGroupSource *group in dataSourceTableView) {
+            if ([group.childs count]>=2) {
+                [ group.childs  sortUsingComparator:^NSComparisonResult(id o1, id o2) {
+                    NSDictionary *dict1 = [o1 objectForKey:@"location"];
+                    NSDictionary *dict2 = [o2 objectForKey:@"location"];
+                    NSNumber *urlStr1 = [dict1 objectForKey:@"distance"];
+                    NSNumber *urlStr2 = [dict2 objectForKey:@"distance"];
+                    return [urlStr1 compare:urlStr2];
+                }];
+            }
+        }
+
+        
         dictDetail = [((SlideGroupSource *)item).childs objectAtIndex:indexPath.row];
     }else{
+        
+        [ dataSourceTableView  sortUsingComparator:^NSComparisonResult(id o1, id o2) {
+            NSDictionary *dict1 = [o1 objectForKey:@"location"];
+            NSDictionary *dict2 = [o2 objectForKey:@"location"];
+            NSNumber *urlStr1 = [dict1 objectForKey:@"distance"];
+            NSNumber *urlStr2 = [dict2 objectForKey:@"distance"];
+            return [urlStr1 compare:urlStr2];
+        }];
+
+        
         dictDetail = [dataSourceTableView objectAtIndex:indexPath.row];
     }
     
@@ -520,33 +544,33 @@
     
     }else {
         // ko group 
-        if (!detailViewController) {
-            detailViewController = [[DetailPlaceViewControllerViewController alloc]initWithNibName:@"DetailPlaceViewControllerViewController" bundle:nil];
-            detailViewController.delegate =self;
-        } 
+//        if (!detailViewController) {
+//            detailViewController = [[DetailPlaceViewControllerViewController alloc]initWithNibName:@"DetailPlaceViewControllerViewController" bundle:nil];
+////            detailViewController.delegate =self;
+//        } 
         
         NSDictionary *dictInfo = [dataSourceTableView objectAtIndex:indexPath.row];
-        detailViewController.dictInfo = dictInfo;
-        [detailViewController configureView];
-        [self.view addSubview:detailViewController.view];
-        [self.view bringSubviewToFront:detailViewController.view];
-        CGRect frameView = CGRectMake(0, 500, 320, 460);
-//        self.view.frame = frameView;
-//        CGRect frame = detailViewController.view.frame;
-//        frame.origin.y =500;
-//        frame.size.height = detailViewController.view.frame.size.height +44;
-        detailViewController.view.frame = frameView;
-        CGRect ff = self.view.frame;
-        ff.size.height = self.view.frame.size.height+44;
-        self.view.frame = ff;
-        [UIView beginAnimations:@"Show Detail Place" context:nil];
-        frameView.origin.y =0;
-        detailViewController.view.frame = frameView;//
-        [UIView commitAnimations];
+        if (dictInfo) {
+            [self.delegate addDetailPlaceView:dictInfo];
+        }
         
-
-        [requestDetaiLocation configURLByItemId:[dictInfo objectForKey:@"id"]];
-        [requestDetaiLocation requestData];
+//        detailViewController.dictInfo = dictInfo;
+//        [detailViewController configureView];
+//        [self.view addSubview:detailViewController.view];
+//        [self.view bringSubviewToFront:detailViewController.view];
+//        CGRect frameView = CGRectMake(0, 500, 320, 460);
+//        detailViewController.view.frame = frameView;
+//        CGRect ff = self.view.frame;
+//        ff.size.height = self.view.frame.size.height+44;
+//        self.view.frame = ff;
+//        [UIView beginAnimations:@"Show Detail Place" context:nil];
+//        frameView.origin.y =0;
+//        detailViewController.view.frame = frameView;//
+//        [UIView commitAnimations];
+//        
+//
+//        [requestDetaiLocation configURLByItemId:[dictInfo objectForKey:@"id"]];
+//        [requestDetaiLocation requestData];
     }
     
 }
@@ -562,17 +586,22 @@
 #pragma mark DetaiViewController Delegare
 -(void)disMissDetailViewController
 {
-    [self closeRequestImageProvider];
-    [UIView beginAnimations:@"Hide Detail Place" context:nil];
-    CGRect frame = detailViewController.view.frame;
-    frame.origin.y =500;
-    detailViewController.view.frame =frame;
-    [UIView commitAnimations];
-    UIView *subView = [self.view viewWithTag:TAG_DETAIL_VIEW_CONTROLLER];
-    [subView removeFromSuperview];
-    self.detailViewController = nil;
-    [self.tableView reloadData];
+    NSLog(@"Not implement here");
+//    [self closeRequestImageProvider];
+//    [UIView beginAnimations:@"Hide Detail Place" context:nil];
+//    CGRect frame = detailViewController.view.frame;
+//    frame.origin.y =500;
+//    detailViewController.view.frame =frame;
+//    [UIView commitAnimations];
+//    UIView *subView = [self.view viewWithTag:TAG_DETAIL_VIEW_CONTROLLER];
+//    [subView removeFromSuperview];
+//    self.detailViewController = nil;
+//    [self.tableView reloadData];
 
+}
+-(void)closeRequestFromDetailView
+{
+    //not implement here
 }
 #pragma mark Detail Place Delegate
 -(void) DetailPlaceDidFinishParsing:(DetailPlaceProvider *)provider

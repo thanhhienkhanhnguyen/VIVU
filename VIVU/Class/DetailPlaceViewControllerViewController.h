@@ -19,6 +19,7 @@
 @protocol DetailViewControllerDelegate <NSObject>
 
 -(void) disMissDetailViewController;
+-(void)closeRequestFromDetailView;
 
 @end
 

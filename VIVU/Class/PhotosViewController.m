@@ -176,7 +176,7 @@
                 }
                 if (isBelongToPopOver) {
                     frame = CGRectMake(20+(j-1)*(FLEXIBLE_SPACE+WIDTH_IMAGE),maxY + 10+ (i-1)*(FLEXIBLE_SPACE+WIDTH_IMAGE), WIDTH_IMAGE, WIDTH_IMAGE);
-                    self.btnClose.hidden = YES;
+//                    self.btnClose.hidden = YES;
                     
                 }else {
                     if (page==1) {
@@ -184,6 +184,7 @@
                     }else {
                         frame = CGRectMake(20+(j-1)*(FLEXIBLE_SPACE+WIDTH_IMAGE),maxY + 10+ (i-1)*(FLEXIBLE_SPACE+WIDTH_IMAGE), WIDTH_IMAGE, WIDTH_IMAGE);
                     }
+//                    self.btnClose.hidden = NO;
                     
                 }
                 
@@ -207,14 +208,17 @@
         }
         if ([arrayPhotos count]>NUMBER_IMAGE_PER_PAGE*page) {
             maxY =maxY +WIDTH_IMAGE+10;
-            UIButton *btnShowMorePhoto = [[UIButton alloc]initWithFrame:CGRectMake(20, maxY, 300, 50)];
+            UIButton *btnShowMorePhoto = [[UIButton alloc]initWithFrame:CGRectMake(20, maxY, 270, 30)];
             [btnShowMorePhoto setTag:page+30000];
-            [btnShowMorePhoto setTitle:@"Show More Photos" forState:UIControlStateNormal];
+//            [btnShowMorePhoto setTitle:@"Show More Photos" forState:UIControlStateNormal];
+            UIImage *image = [UIImage imageNamed:@"more_photo_02.png"];
+            image = [VIVUtilities scaleImage:image withSize:CGSizeMake(270, 30)];
+            [btnShowMorePhoto setBackgroundImage:image forState:UIControlStateNormal];
             
             [btnShowMorePhoto addTarget:self action:@selector(createMorePhotos:) forControlEvents:UIControlEventTouchUpInside];
             [btnShowMorePhoto setTintColor:[UIColor greenColor]];
-            [btnShowMorePhoto.layer setBorderColor:[UIColor greenColor].CGColor];
-            [btnShowMorePhoto.layer setBorderWidth:10.0f];
+//            [btnShowMorePhoto.layer setBorderColor:[UIColor greenColor].CGColor];
+//            [btnShowMorePhoto.layer setBorderWidth:10.0f];
             [self.scrollView addSubview:btnShowMorePhoto];
             [btnShowMorePhoto release];
 //            maxY += WIDTH_IMAGE+100;
@@ -297,12 +301,11 @@
                 }
                 if (isBelongToPopOver) {
                     frame = CGRectMake(20+(j-1)*(FLEXIBLE_SPACE+WIDTH_IMAGE), 10+ (i-1)*(FLEXIBLE_SPACE+WIDTH_IMAGE), WIDTH_IMAGE, WIDTH_IMAGE);
-                    self.btnClose.hidden = YES;
+                    
                     
                 }else {
                     frame = CGRectMake(20+(j-1)*(FLEXIBLE_SPACE+WIDTH_IMAGE), 10+ i*(FLEXIBLE_SPACE+WIDTH_IMAGE), WIDTH_IMAGE, WIDTH_IMAGE);
-                    btnClose.hidden = NO;
-                    btnClose.userInteractionEnabled = YES;
+                   
                 }
                 
                 if (i==row-1) {
@@ -352,7 +355,9 @@
 //        frame.size = CGSizeMake(330, 330);
 //        [self.view setFrame:frame];
         [self setContentSizeForViewInPopover:CGSizeMake(330, 330)];
-        self.btnClose.hidden = YES;
+        if (isBelongToPopOver) {
+            self.btnClose.hidden = YES;
+        } 
     }
 }
 - (void)viewDidLoad

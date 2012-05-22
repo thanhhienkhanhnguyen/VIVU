@@ -57,6 +57,11 @@
     
     [self.tableView setFrame:frame];
 }
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    NSLog(@"%f,%f",self.contentSizeForViewInPopover.height,self.contentSizeForViewInPopover.width);
+}
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [super touchesEnded:touches withEvent:event];
@@ -106,12 +111,39 @@
         
     }
     
+
     NSDictionary *dictDetail = nil;
     id item = [dataSourceTableView objectAtIndex:indexPath.section];
     if ([item isKindOfClass:[SlideGroupSource class]]) {
+        for (SlideGroupSource *group in dataSourceTableView) {
+            if ([group.childs count]>=2) {
+                [ group.childs  sortUsingComparator:^NSComparisonResult(id o1, id o2) {
+                    NSDictionary *dict1 = [o1 objectForKey:@"location"];
+                    NSDictionary *dict2 = [o2 objectForKey:@"location"];
+                    NSNumber *urlStr1 = [dict1 objectForKey:@"distance"];
+                    NSNumber *urlStr2 = [dict2 objectForKey:@"distance"];
+                    return [urlStr1 compare:urlStr2];
+                }];
+            }
+        }
+        
+        
         dictDetail = [((SlideGroupSource *)item).childs objectAtIndex:indexPath.row];
     }else{
+        
+        [ dataSourceTableView  sortUsingComparator:^NSComparisonResult(id o1, id o2) {
+            NSDictionary *dict1 = [o1 objectForKey:@"location"];
+            NSDictionary *dict2 = [o2 objectForKey:@"location"];
+            NSNumber *urlStr1 = [dict1 objectForKey:@"distance"];
+            NSNumber *urlStr2 = [dict2 objectForKey:@"distance"];
+            return [urlStr1 compare:urlStr2];
+        }];
+        
         dictDetail = [dataSourceTableView objectAtIndex:indexPath.row];
+        
+       
+
+        
     }
     
     

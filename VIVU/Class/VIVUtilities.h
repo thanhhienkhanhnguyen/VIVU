@@ -10,7 +10,7 @@
 
 #import "ImagesProfileProvider.h"
 
-@interface VIVUtilities : NSObject<ImagesProfileProviderDelegate>
+@interface VIVUtilities : NSObject
 {
    
 }
@@ -27,5 +27,6 @@
 +(BOOL)isIpadDevice;
 +(CGSize)getSizeDevice;
 +(void) closeRequestImageProviderWithArrayProvider:(NSMutableArray *)arrayProvider;
++(UIImage *)scaleImage:(UIImage *)image withSize:(CGSize)size;
 
 @end

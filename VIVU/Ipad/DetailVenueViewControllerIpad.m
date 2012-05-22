@@ -251,7 +251,7 @@
     }else if (indexPath.section==2) {
         //Tips
         if (!tableViewTips) {
-            self.tableViewTips = [[tableViewTipsControllerViewController alloc]initWithNibName:@"tableViewTipsViewControllerIpad" bundle:nil];
+            tableViewTips = [[tableViewTipsControllerViewController alloc]initWithNibName:@"tableViewTipsViewControllerIpad" bundle:nil];
             tableViewTips.delegate =self;
         }
         if (!requestMoreTips) {
@@ -278,7 +278,7 @@
         if (arrayProvider) {
             for (ImagesProfileProvider *provider in arrayProvider ) {
                 if (provider.loadingData) {
-                    [provider cancelDownload];
+                    [provider cancelDownloadProvider];
                 }
             }
         }
@@ -313,7 +313,7 @@
 }
 -(void)MoreTipsdidFinishParsingWithError:(MoreTisProvider *)provider error:(NSError *)error
 {
-    
+    NSLog(@"%@",[error description]);
 }
 #pragma mark Copy Function
 -(void) loadImageFromArrayProviderWithCounter:(NSInteger)index
@@ -431,7 +431,7 @@
                                 
                                 NSArray *array = [NSArray arrayWithObject:index];
                                 [tableViewTips.tableView reloadRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationMiddle];
-                                break;
+//                                break;
 
                                 
                             }
@@ -452,7 +452,7 @@
 }
 -(void)ImagesProfileProviderDidFinishWithError:(NSError *)error provider:(ImagesProfileProvider *)provider
 {
-    provider.finishLoad = YES;
+//    provider.finishLoad = YES;
     counter ++;
     [self loadOneByOneImage];
     

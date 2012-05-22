@@ -44,8 +44,8 @@ static inline CGFloat getDist(CGPoint point1,CGPoint point2)
 -(NSArray*) findAllGroupingWithAnnotations:(NSArray*)annos withGroupDistance:(float)dist
 {
 	NSMutableArray* groupings = [NSMutableArray array];
-    NSMutableArray* singles = [[NSMutableArray alloc] initWithArray:annos copyItems:FALSE];
-//    NSMutableArray* singles = [NSMutableArray arrayWithArray:annos];
+//    NSMutableArray* singles = [[NSMutableArray alloc] initWithArray:annos copyItems:FALSE];
+    NSMutableArray* singles = [NSMutableArray arrayWithArray:annos];
 	while(TRUE)
 	{
 		NSArray* grouping = [self findFirstGroupingWithAnnotations:singles withGroupDistance:dist];
@@ -80,8 +80,8 @@ static inline CGFloat getDist(CGPoint point1,CGPoint point2)
 
 -(void) addAnnotations:(NSArray*)annos withGroupDistance:(float)dist
 {
-    NSMutableArray* singleAnnotationsMinusGrouped = [[NSMutableArray alloc] initWithArray:annos copyItems:FALSE];
-//    NSMutableArray* singleAnnotationsMinusGrouped  = [NSMutableArray arrayWithArray:annos];
+//    NSMutableArray* singleAnnotationsMinusGrouped = [[NSMutableArray alloc] initWithArray:annos copyItems:FALSE];
+    NSMutableArray* singleAnnotationsMinusGrouped  = [NSMutableArray arrayWithArray:annos];
 	NSArray* groupings = [self findAllGroupingWithAnnotations:annos withGroupDistance:dist];
 	for(NSArray* group in groupings)
 	{
