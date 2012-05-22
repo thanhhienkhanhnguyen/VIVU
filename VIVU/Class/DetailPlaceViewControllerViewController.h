@@ -22,7 +22,7 @@
 
 @end
 
-@interface DetailPlaceViewControllerViewController : UIViewController<DetailImageViewDelegate,ImagesViewControllerDelegate,MorePhotosDelegate,ImagesProfileProviderDelegate>
+@interface DetailPlaceViewControllerViewController : UIViewController<DetailImageViewDelegate,ImagesViewControllerDelegate,MorePhotosDelegate,ImagesProfileProviderDelegate,CloseRequestFromSubview>
 {
     BOOL finishLoadImage;
 }

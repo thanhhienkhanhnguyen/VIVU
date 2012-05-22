@@ -17,8 +17,14 @@
 -(void) requestMoreProviderWithSubArrayPhotos:(NSMutableArray *)subArrayPhotos;
 -(void) rePresentPopOverFromPhotosViewController;
 
-@end
 
+@end
+@protocol CloseRequestFromSubview <NSObject>
+
+-(void) closeRequestImageProvider;
+-(void) requestMoreProviderWithSubArrayPhotos:(NSMutableArray *)subArrayPhotos;
+
+@end
 @interface PhotosViewController : UIViewController<PhotosScrollViewDelegate>
 @property (nonatomic, retain) IBOutlet UIScrollView *scrollView;
 @property (nonatomic, retain) NSMutableArray *arrayPhotos;
@@ -26,6 +32,7 @@
 @property (nonatomic, assign) NSInteger numberPhotos;
 @property (nonatomic, retain) PhotosScrollViewController *photosView;
 @property (nonatomic, assign) id<PhotosViewControllerDelegate>delegate;
+@property (nonatomic, assign) id<CloseRequestFromSubview> delegatePhotosView;
 @property (nonatomic, assign) BOOL isBelongToPopOver;
 @property (nonatomic, retain) IBOutlet UIButton *btnClose;
 -(void) createBasicViewPhotos;
@@ -33,4 +40,5 @@
 -(void) reloadPhotoById:(NSString *)Id;
 -(void) createSubPhotosWithIndex:(NSInteger)page;
 -(void) createBasicViewPhotosForPopOver:(NSInteger)page;
+-(void) clearAllImageInView;
 @end

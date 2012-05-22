@@ -142,6 +142,9 @@
                                                [VIVUtilities applicationDocumentsDirectory],
                                                provider.categoryName]]) {
                 needDownload = NO;
+                if (detailViewController) {
+                    [detailViewController reloadImageById:provider.categoryName];
+                }
             }
             if (needDownload) {
                 if (index>=1) {
@@ -321,7 +324,10 @@
         if ([dataSourceGroupTableView count]>0) {
             SlideGroupSource *group = [dataSourceGroupTableView objectAtIndex:section];
             if ([group isKindOfClass:[SlideGroupSource class]]) {
-                return group.groupName;
+                NSInteger count = [group.childs count];
+                NSString *str = [NSString stringWithFormat:@"%@ ",group.groupName]; 
+                str = [str stringByAppendingFormat:@"(%d)",count];
+                return str;
             }
             
         }
@@ -544,14 +550,24 @@
     }
     
 }
+
+-(void) closeRequestImageProvider
+{
+    for (ImagesProfileProvider *provider in arrayProvider) {
+        if (provider.loadingData ==YES) {
+            [provider cancelDownloadProvider];
+        }
+    }
+}
 #pragma mark DetaiViewController Delegare
 -(void)disMissDetailViewController
 {
-        [UIView beginAnimations:@"Hide Detail Place" context:nil];
-        CGRect frame = detailViewController.view.frame;
-        frame.origin.y =500;
-        detailViewController.view.frame =frame;
-        [UIView commitAnimations];
+    [self closeRequestImageProvider];
+    [UIView beginAnimations:@"Hide Detail Place" context:nil];
+    CGRect frame = detailViewController.view.frame;
+    frame.origin.y =500;
+    detailViewController.view.frame =frame;
+    [UIView commitAnimations];
     UIView *subView = [self.view viewWithTag:TAG_DETAIL_VIEW_CONTROLLER];
     [subView removeFromSuperview];
     self.detailViewController = nil;
@@ -641,7 +657,7 @@
         detailViewController.arrayTips =arraytips;
         detailViewController.arrayImages =arrayPhotos;
         detailViewController.numberPhotos = [[dictResult objectForKey:@"countPhoto"]intValue];
-        NSLog(@"%d",[detailViewController.arrayImages count]);
+//        NSLog(@"%d",[detailViewController.arrayImages count]);
        [detailViewController createBasicViewDetail];
         [self initArrayProvider];
         self.counter =0;
@@ -742,7 +758,7 @@
 -(void) ImagesProfileProviderDidFinishWithError:(NSError *)error provider:(ImagesProfileProvider *)provider
 {
     NSLog(@"load image throw error :%@",[provider getCurrentURL]);
-    provider.finishLoad = YES;
+
     counter ++;
     [self loadOneByOneImage];
     if (provider.mode== ProvierModeUserMostActive) {

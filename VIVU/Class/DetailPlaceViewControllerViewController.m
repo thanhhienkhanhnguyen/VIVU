@@ -510,7 +510,9 @@
         //Iphone Device
            if (!photosViewController) {
               photosViewController = [[PhotosViewController alloc]initWithNibName:@"PhotosViewController" bundle:nil];
+            
            }
+           photosViewController.delegatePhotosView = self;
            photosViewController.modalPresentationStyle = UIModalPresentationFullScreen;
            photosViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
            photosViewController.numberPhotos =self.numberPhotos;
@@ -547,7 +549,19 @@
     
 }
 
-
+#pragma mark CloseRequestProvider Delegate
+-(void) closeRequestImageProvider
+{
+    for (ImagesProfileProvider *provider in arrayProvider) {
+        if (provider.loadingData ==YES) {
+            [provider cancelDownloadProvider];
+        }
+    }
+}
+-(void)requestMoreProviderWithSubArrayPhotos:(NSMutableArray *)subArrayPhotos
+{
+    //not implement here
+}
 #pragma mark MorePhotoProvider Delegate
 -(void)MorePhotosDidFinishParsing:(MorePhotosProvider *)provider
 {
@@ -555,6 +569,7 @@
         self.arrayFullPhotos = [NSMutableArray arrayWithArray:provider.resultContent];
         self.arrayProvider = [NSMutableArray array];
         photosViewController.arrayPhotos = arrayFullPhotos;
+    
         [photosViewController createBasicViewPhotos];
         for(NSDictionary *dictPhoto in arrayFullPhotos)
         {
@@ -623,7 +638,7 @@
 }
 -(void)ImagesProfileProviderDidFinishWithError:(NSError *)error provider:(ImagesProfileProvider *)provider
 {
-    provider.finishLoad = YES;
+//    provider.finishLoad = YES;
     counter ++;
     [self loadOneByOneImage];
    

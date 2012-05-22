@@ -31,9 +31,11 @@
 @synthesize isBelongToPopOver;
 @synthesize btnClose;
 @synthesize subArrayPhotos;
+@synthesize delegatePhotosView;
 
 -(void)dealloc
 {
+    delegatePhotosView =nil;
     [subArrayPhotos release];
     [btnClose release];
     delegate =nil;
@@ -48,8 +50,10 @@
 -(IBAction)closeView:(id)sender
 {
     if ([VIVUtilities isIpadDevice]) {
+        [self.delegatePhotosView closeRequestImageProvider];
         [self.delegate closeMorePhoto];
     }else {
+        [self.delegatePhotosView closeRequestImageProvider];
         [self dismissModalViewControllerAnimated:YES];
 
     }
@@ -143,7 +147,8 @@
 }
 -(void) createBasicViewPhotosForPopOver:(NSInteger)page
 {
-    if ([subArrayPhotos count]>4||([subArrayPhotos count]<=4&& isBelongToPopOver)) {
+    
+    if ([subArrayPhotos count]>0||([subArrayPhotos count]<=4&& isBelongToPopOver)) {
         //            NSLog(@"subImages :%d",[arrayPhotos count]);
         
         NSInteger row = (int)[subArrayPhotos count]/4+1;
@@ -227,19 +232,37 @@
 -(void)createMorePhotos:(id)sender
 {
     NSInteger tag = ((UIButton*)sender).tag;
+    
+  
     NSInteger page = tag -30000;
+//    UIView *subView =  [self.scrollView viewWithTag:tag];
+//    if (subView) {
+//        [subView removeFromSuperview];
+//    }
     [self createSubPhotosWithIndex:(page +1)];
     [self createBasicViewPhotosForPopOver:(page +1)];
-    [self.delegate requestMoreProviderWithSubArrayPhotos:subArrayPhotos];
-    UIView *subView =  [self.scrollView viewWithTag:tag];
-    if (subView) {
-        [subView removeFromSuperview];
+    [self.delegatePhotosView closeRequestImageProvider];
+    [self.delegatePhotosView requestMoreProviderWithSubArrayPhotos:subArrayPhotos];
+    for (UIView *subView in self.scrollView.subviews) {
+        if (subView.tag ==tag) {
+            [subView removeFromSuperview];
+        }
     }
     
+    
 }
-
+-(void) clearAllImageInView
+{
+    for(UIView *subView in self.scrollView.subviews)
+    {
+        if ([subView isKindOfClass:[CustomeButton class]]) {
+            [subView removeFromSuperview];
+        }
+    }
+}
 -(void)createBasicViewPhotos
 {
+    [self clearAllImageInView];
     CGRect frame = CGRectMake(320-50, 0, 50, 50);
     UIButton *btnCloseShowMorePhotos = [[UIButton alloc]initWithFrame:frame];
     [btnCloseShowMorePhotos setTitle:@"Close" forState:UIControlStateNormal];
@@ -329,6 +352,7 @@
 //        frame.size = CGSizeMake(330, 330);
 //        [self.view setFrame:frame];
         [self setContentSizeForViewInPopover:CGSizeMake(330, 330)];
+        self.btnClose.hidden = YES;
     }
 }
 - (void)viewDidLoad

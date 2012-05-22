@@ -35,6 +35,7 @@
     NSMutableArray *annotations;
     BOOL isVisibleTableView;
     BOOL allowLoadingMap;
+    MKAnnotationView *currentAnnotation;
 
 }
 
@@ -73,6 +74,7 @@
 @property (nonatomic, retain) PhotosViewController *photosViewControllerMainView;
 @property (nonatomic, assign) CGRect currentFramePopOver;
 @property (nonatomic, retain) DetailVenueViewControllerIpad *tempDetailVenueViewController;
+
 
 
 

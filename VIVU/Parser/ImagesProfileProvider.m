@@ -69,8 +69,9 @@
             }
         }else {
             //Access Deny
-            finishLoad = YES;
+            
             [self cancelDownload];
+            self.finishLoad = YES;
             if ([ImagesProfileDelegate respondsToSelector:@selector(ImagesProfileProviderDidFinishWithError:provider:)]) {
                 [ImagesProfileDelegate ImagesProfileProviderDidFinishWithError:nil provider:self];
                 
@@ -87,12 +88,45 @@
 - (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
 
-    finishLoad = NO;
+    finishLoad = YES;
     [self cancelDownload];
     
     if ([ImagesProfileDelegate respondsToSelector:@selector(ImagesProfileProviderDidFinishWithError:provider:)]) {
         [ImagesProfileDelegate ImagesProfileProviderDidFinishWithError:error provider:self];
         
     }
+}
+-(void)cancelDownload
+{
+    if (self.loadingData)
+	{
+		[self.connection cancel];
+		self.loadingData = NO;
+		
+		self.receivedData = nil;
+		self.connection = nil;
+        
+        
+	}
+    
+}
+-(void) cancelDownloadProvider
+{
+    if (self.loadingData)
+	{
+		[self.connection cancel];
+		self.loadingData = NO;
+		
+		self.receivedData = nil;
+		self.connection = nil;
+        self.finishLoad = NO;
+        if ([ImagesProfileDelegate respondsToSelector:@selector(ImagesProfileProviderDidFinishWithError:provider:)]) {
+            [ImagesProfileDelegate ImagesProfileProviderDidFinishWithError:nil provider:self];
+            
+        }
+        
+        
+        
+	}
 }
 @end

@@ -26,4 +26,6 @@
 +(CGSize) getSizeIphone;
 +(BOOL)isIpadDevice;
 +(CGSize)getSizeDevice;
++(void) closeRequestImageProviderWithArrayProvider:(NSMutableArray *)arrayProvider;
+
 @end

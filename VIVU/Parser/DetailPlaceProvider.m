@@ -55,6 +55,13 @@
                 NSString *date = [dictItem objectForKey:@"createdAt"];
                 NSString *text = [dictItem objectForKey:@"text"];
                 NSString *url = [dictItem objectForKey:@"photourl"];
+                if ([url rangeOfString:@"jpg"].length>0) {
+                    url= [url stringByReplacingOccurrencesOfString:@".jpg" withString:@"_100x100.jpg"];
+                }
+                
+                if ([url rangeOfString:@"pix"].length>0) {
+                    url =[url stringByReplacingOccurrencesOfString:@"pix" withString:@"derived_pix"];
+                }  
                 NSDictionary *dictUser = [dictItem objectForKey:@"user"];
                 NSDictionary *dictTipItem = [NSDictionary dictionaryWithObjectsAndKeys:
                                              dictUser,@"userTip",

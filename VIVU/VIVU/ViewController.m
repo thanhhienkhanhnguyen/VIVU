@@ -144,18 +144,19 @@
 	// Do any additional setup after loading the view, typically from a nib.
     allowLoadingMap = YES;
     [self setRegion:self.coorCurent];
-    NSArray *array = self.mapView.gestureRecognizers;
-    for(UIGestureRecognizer *get in array)
-    {
-        if ([get isKindOfClass:[UILongPressGestureRecognizer class]]) {
-            [self.mapView removeGestureRecognizer:get];
-            break;
-        }
-    }
+//    NSArray *array = self.mapView.gestureRecognizers;
+//    for(UIGestureRecognizer *get in array)
+//    {
+//        if ([get isKindOfClass:[UILongPressGestureRecognizer class]]) {
+//            [self.mapView removeGestureRecognizer:get];
+//            break;
+//        }
+//    }
     self.navigationController.navigationBarHidden = YES;
     // add tab bar 
     [self installUncaughtExceptionHandler];
     currentFramePopOver = CGRectNull;
+    currentAnnotation  =nil;
     
 }
 
@@ -187,6 +188,28 @@
     }
     
     
+}
+-(void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+
+    [self configApp];
+    [self refreshALLCustomBadge];
+}
+-(void) configApp
+{
+    if (popoverController.popoverVisible) {
+        if (currentAnnotation) {
+            CGPoint annotationPoint = [self.mapView convertCoordinate:self.mapView.centerCoordinate toPointToView:self.view];
+            float boxDY=annotationPoint.y-13;
+            float boxDX=annotationPoint.x+10;
+            CGRect box = CGRectMake(boxDX,boxDY,5,5);
+            UILabel *displayLabel = [[UILabel alloc] initWithFrame:box];
+            currentFramePopOver = displayLabel.frame;
+            [popoverController presentPopoverFromRect:displayLabel.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionLeft animated:YES];
+            
+        }
+        
+    }
 }
 - (UIImage *)scaleImage:(UIImage *)image withSize:(CGSize)size
 {
@@ -312,6 +335,7 @@
     if ([view.annotation isKindOfClass:[MKUserLocation class]]) {
         return ;
     }
+    currentAnnotation = view;
     if ([view.annotation isKindOfClass:[GroupedAnnotation class]]||[view.annotation isKindOfClass:[SingleAnnotation class]]) {
         
         NSMutableArray *arrayDataSource =[[NSMutableArray alloc]init];
@@ -367,11 +391,6 @@
             [showGroupTableViewIphone.cheatView.layer setCornerRadius:5.0f];
             
                        
-//            if (![view.annotation isKindOfClass:[MKUserLocation class]]) {
-//                [self.mapView removeAnnotation:view.annotation]; 
-//                [self.mapView addAnnotations:annotations withGroupDistance:30.0f];
-//                
-//            }
 
             
             
@@ -379,44 +398,81 @@
            //ipad
             
             
-            if (!self.showAllPlaceTableViewIpad) {
-                self.showAllPlaceTableViewIpad = [[ShowAllPlaceViewController_Ipad alloc]initWithNibName:@"ShowAllPlaceViewController_Ipad" bundle:nil];
-                showAllPlaceTableViewIpad.delegate =self;
-            }else {
-                [showAllPlaceTableViewIpad.dataSourceTableView removeAllObjects];
+            if ([view.annotation isKindOfClass:[GroupedAnnotation class]]) {
+                if (self.popoverController != nil) {
+                    if (popoverController.popoverVisible == YES) {
+                        [popoverController dismissPopoverAnimated:YES];
+                    }
+                    [popoverController release];
+                    popoverController = nil;
+                }
+                if (!self.showAllPlaceTableViewIpad) {
+                    showAllPlaceTableViewIpad = [[ShowAllPlaceViewController_Ipad alloc]initWithNibName:@"ShowAllPlaceViewController_Ipad" bundle:nil];
+                    showAllPlaceTableViewIpad.delegate =self;
+                }else {
+                    [showAllPlaceTableViewIpad.dataSourceTableView removeAllObjects];
+                }
+                showAllPlaceTableViewIpad.dataSourceTableView  =[NSMutableArray arrayWithArray:arrayDataSource];
+                [showAllPlaceTableViewIpad.tableView reloadData];
+                
+                
+                UINavigationController *content = [[UINavigationController alloc] initWithRootViewController:showAllPlaceTableViewIpad];
+                popoverController = [[UIPopoverController alloc] initWithContentViewController:showAllPlaceTableViewIpad.navigationController];
+                popoverController.delegate = self;
+                CGSize popOverSize = [showAllPlaceTableViewIpad sizeInPopoverView];
+                popoverController.popoverContentSize = popOverSize; 
+                //                CGRect frame = detailVenueViewController.view.frame;
+                //                //        CGRect ff = self.view.bounds;
+                //                frame.size.height = popOverSize.height;
+                //                frame.size.width = 250;
+                //                detailVenueViewController.view.frame = frame;
+                //                [detailVenueViewController.tableView setBackgroundColor:[UIColor whiteColor]];
+                //        showGroupTableView.tableView.frame = frame;
+                
+                //                CGPoint annotationPoint = [self.mapView convertCoordinate:view.annotation.coordinate toPointToView:self.view];
+                
+                CGPoint annotationPoint = [self.mapView convertCoordinate:self.mapView.centerCoordinate toPointToView:self.view];
+                float boxDY=annotationPoint.y-13;
+                float boxDX=annotationPoint.x+10;
+                CGRect box = CGRectMake(boxDX,boxDY,5,5);
+                UILabel *displayLabel = [[UILabel alloc] initWithFrame:box];
+                currentFramePopOver = displayLabel.frame;
+                [popoverController presentPopoverFromRect:displayLabel.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionLeft animated:YES];
+                //                [detailVenueViewController release];
+                //                detailVenueViewController = nil;
+//                self.tempDetailVenueViewController = detailVenueViewController;
+                [content release];
+                [arrayDataSource release];
+                [displayLabel release];
+                id<MKAnnotation> anno = view.annotation;
+                CLLocationCoordinate2D coor = anno.coordinate;
+                [self.mapView setCenterCoordinate:coor animated:YES];
+            
+                [self refreshALLCustomBadge];
+                [self.mapView deselectAnnotation:view.annotation animated:YES];
+
+
             }
-            showAllPlaceTableViewIpad.dataSourceTableView  =[NSMutableArray arrayWithArray:arrayDataSource];
-            [showAllPlaceTableViewIpad.tableView reloadData];
-            CGSize size = [showAllPlaceTableViewIpad sizeInPopoverView];
-            CGRect frameCheatView = self.view.frame;
-            frameCheatView.size = size;
-            CGSize sizeDevice = [VIVUtilities getSizeIpad];
-            frameCheatView.origin.x =(sizeDevice.width/2-size.width/2)-WIDTH_VIEWCONTROLLER_PANEL;
-            frameCheatView.origin.y = (sizeDevice.height/2 - size.height)-25;
-//            frameCheatView.size.height = size.height-30;
-//            CGRect frameRectangle = frameCheatView;
-//            frameRectangle.origin.y =
-            CGRect framefix = self.view.frame;
-            framefix.size.width = self.view.frame.size.width -WIDTH_VIEWCONTROLLER_PANEL;
-            framefix.origin.x = WIDTH_VIEWCONTROLLER_PANEL;
-            showAllPlaceTableViewIpad.view.frame =framefix;
-            showAllPlaceTableViewIpad.cheatView.frame =frameCheatView;
-            
-            [showAllPlaceTableViewIpad.tableView reloadData];
-            CGRect frameView = CGRectMake(WIDTH_VIEWCONTROLLER_PANEL, 0, [VIVUtilities getSizeIpad].width -WIDTH_VIEWCONTROLLER_PANEL+60, [VIVUtilities getSizeIpad].height);
-            [showAllPlaceTableViewIpad.view setFrame:frameView];
-            [showAllPlaceTableViewIpad.view setTag:TAG_SHOW_TABLE_VIEW];
-            [self.view addSubview:showAllPlaceTableViewIpad.view];
-//            [self refreshAllAnnotation];
-            
-//            showAllPlaceTableViewIpad.modalPresentationStyle = UIModalPresentationFullScreen;
-//            showAllPlaceTableViewIpad.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-//            [self presentModalViewController:showAllPlaceTableViewIpad animated:YES];
-            
-//            [showAllPlaceTableViewIpad.cheatView setCenter:self.view.center];
-            [showAllPlaceTableViewIpad.cheatView.layer setBorderColor:[UIColor greenColor].CGColor];
-            [showAllPlaceTableViewIpad.cheatView.layer setBorderWidth:2.0f];
-            [showAllPlaceTableViewIpad.cheatView.layer setCornerRadius:5.0f];
+            //            CGRect frameCheatView = self.view.frame;
+//            frameCheatView.size = size;
+//            CGSize sizeDevice = [VIVUtilities getSizeIpad];
+//            frameCheatView.origin.x =(sizeDevice.width/2-size.width/2)-WIDTH_VIEWCONTROLLER_PANEL;
+//            frameCheatView.origin.y = (sizeDevice.height/2 - size.height)-25;
+//            CGRect framefix = self.view.frame;
+//            framefix.size.width = self.view.frame.size.width -WIDTH_VIEWCONTROLLER_PANEL;
+//            framefix.origin.x = WIDTH_VIEWCONTROLLER_PANEL;
+//            showAllPlaceTableViewIpad.view.frame =framefix;
+//            showAllPlaceTableViewIpad.cheatView.frame =frameCheatView;
+//            
+//            [showAllPlaceTableViewIpad.tableView reloadData];
+//            CGRect frameView = CGRectMake(WIDTH_VIEWCONTROLLER_PANEL, 0, [VIVUtilities getSizeIpad].width -WIDTH_VIEWCONTROLLER_PANEL+60, [VIVUtilities getSizeIpad].height);
+//            [showAllPlaceTableViewIpad.view setFrame:frameView];
+//            [showAllPlaceTableViewIpad.view setTag:TAG_SHOW_TABLE_VIEW];
+//            [self.view addSubview:showAllPlaceTableViewIpad.view];
+//
+//            [showAllPlaceTableViewIpad.cheatView.layer setBorderColor:[UIColor greenColor].CGColor];
+//            [showAllPlaceTableViewIpad.cheatView.layer setBorderWidth:2.0f];
+//            [showAllPlaceTableViewIpad.cheatView.layer setCornerRadius:5.0f];
             if ([view.annotation isKindOfClass:[SingleAnnotation class]]) {
                 if (self.popoverController != nil) {
                     if (popoverController.popoverVisible == YES) {
@@ -426,12 +482,12 @@
                     popoverController = nil;
                 }
                 if (!detailVenueViewController) {
-                    self.detailVenueViewController = [[DetailVenueViewControllerIpad alloc]initWithNibName:@"DetailVenueViewControllerIpad" bundle:nil];
+                    detailVenueViewController = [[DetailVenueViewControllerIpad alloc]initWithNibName:@"DetailVenueViewControllerIpad" bundle:nil];
                     detailVenueViewController.delegate = self;
                 }else {
                     [detailVenueViewController release];
                     detailVenueViewController = nil;
-                    self.detailVenueViewController = [[DetailVenueViewControllerIpad alloc]initWithNibName:@"DetailVenueViewControllerIpad" bundle:nil];
+                    detailVenueViewController = [[DetailVenueViewControllerIpad alloc]initWithNibName:@"DetailVenueViewControllerIpad" bundle:nil];
                     detailVenueViewController.delegate = self;
                 }
                 [detailVenueViewController.view setAutoresizingMask:(UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleBottomMargin)];
@@ -454,7 +510,7 @@
 //                CGPoint annotationPoint = [self.mapView convertCoordinate:view.annotation.coordinate toPointToView:self.view];
                 CGPoint annotationPoint = [self.mapView convertCoordinate:self.mapView.centerCoordinate toPointToView:self.view];
                 float boxDY=annotationPoint.y-13;
-                float boxDX=annotationPoint.x+13;
+                float boxDX=annotationPoint.x+10;
                 CGRect box = CGRectMake(boxDX,boxDY,5,5);
                 UILabel *displayLabel = [[UILabel alloc] initWithFrame:box];
                 currentFramePopOver = displayLabel.frame;
@@ -464,7 +520,7 @@
                 self.tempDetailVenueViewController = detailVenueViewController;
                 [content release];
                 [arrayDataSource release];
-                
+                [displayLabel release];
                 id<MKAnnotation> anno = view.annotation;
                 CLLocationCoordinate2D coor = anno.coordinate;
                 [self.mapView setCenterCoordinate:coor animated:YES];
@@ -810,6 +866,7 @@
 }
 -(void)searchPlaceInPopOver:(id)sender
 {
+    currentAnnotation = nil;//see confip App
     if (self.popoverController != nil) {
         if (popoverController.popoverVisible == YES) {
             [popoverController dismissPopoverAnimated:YES];
@@ -911,6 +968,7 @@
 }
 -(void) showALLPlaceInPopOver:(id)sender
 {
+    currentAnnotation =nil;//see confip App
     if (self.popoverController != nil) {
         if (popoverController.popoverVisible == YES) {
             [popoverController dismissPopoverAnimated:YES];
@@ -1137,6 +1195,12 @@
                                            [VIVUtilities applicationDocumentsDirectory],
                                            provider.categoryName]]) {
             needDownload = NO;
+            if (detailPlaceViewControllerIpad) {
+                [detailPlaceViewControllerIpad reloadImageById:provider.categoryName];
+            }
+            if (detailViewController) {
+                [detailViewController reloadImageById:provider.categoryName];
+            }
         }
         if (needDownload) {
             if (index>=1) {
@@ -1367,39 +1431,28 @@
 }
 -(void)requestMoreProviderWithSubArrayPhotos:(NSMutableArray *)subArrayPhotos
 {
-    if (arrayProvider) {
-        for (ImagesProfileProvider *imageProvider in arrayProvider) {
-            if (imageProvider.loadingData==YES) {
-                [imageProvider cancelDownload];
-            }
-        }
-    }else {
-        self.arrayProvider = [NSMutableArray array];
-    }
-    for(NSDictionary *dictPhoto in subArrayPhotos)
-    {
-        ImagesProfileProvider *imageProvider =[[ImagesProfileProvider alloc]init];
-        [imageProvider configURLByURL:[dictPhoto objectForKey:@"minUrl"]];
-        imageProvider.ImagesProfileDelegate =self;
-        imageProvider.mode = ProviderModeImage;
-        imageProvider.categoryName = [dictPhoto objectForKey:@"id"];
-        [arrayProvider addObject:imageProvider];
-        [imageProvider release];
-    }
-    self.counter =0;
-    [self loadOneByOneImage];
+    //not implement here
 }
 -(void)loadDetailPhotos:(PhotosScrollViewController *)photosScrollView
 {
     [self pushPhotosViewControllerFromMainView:photosScrollView];
     
 }
+//-(void) closeRequestImageProvider
+//{
+//    //implement for ipad
+//}
 -(void)closeMorePhoto
 {
 //    [VIVUtilities stopArrayProvider:arrayProvider];
+//    [VIVUtilities closeRequestImageProviderWithArrayProvider:arrayProvider];
     UIView *subView = [self.view viewWithTag:TAG_MORE_PHOTO_VIEW_CONTROLLER];
     if (subView) {
         [subView removeFromSuperview];
+        if (photosViewControllerMainView) {
+            [photosViewControllerMainView release];
+            photosViewControllerMainView = nil;
+        }
     }
 }
 -(void)pushMorePhotosViewControllerFromMainView:(PhotosViewController *)photosViewController
@@ -1454,6 +1507,7 @@
 }
 -(void)disMissDetailViewControllerIpad
 {
+    [VIVUtilities closeRequestImageProviderWithArrayProvider:arrayProvider];
     UIView *subView = [self.view viewWithTag:TAG_SHOW_DETAIL_VIEW];
     if (subView) {
 //        allowLoadingMap  = YES;
@@ -1498,6 +1552,7 @@
     UIView * subView = [self.view viewWithTag:TAG_SHOW_TABLE_VIEW];
     if (subView) {
         [subView removeFromSuperview];
+        [showGroupTableViewIphone release];
         showGroupTableViewIphone = nil;
 
     }
@@ -1543,6 +1598,8 @@
                 detailPlaceViewControllerIpad =nil;
             }
         }
+        //close curretn request Imager provider
+        [VIVUtilities closeRequestImageProviderWithArrayProvider:arrayProvider];
         if (!detailPlaceViewControllerIpad) {
             self.detailPlaceViewControllerIpad = [[DetailPlaceViewControllerIpad alloc]initWithNibName:@"DetailPlaceViewControllerIpad" bundle:nil];
             detailPlaceViewControllerIpad.delegate =self;
@@ -1582,7 +1639,7 @@
 
    
 }
-#pragma detailPlace provider delegate
+#pragma DetailPlace provider delegate
 -(void) DetailPlaceDidFinishParsing:(DetailPlaceProvider *)provider
 {
 //    [self stopSpinner:self.view];
@@ -1812,7 +1869,7 @@
 -(void) ImagesProfileProviderDidFinishWithError:(NSError *)error provider:(ImagesProfileProvider *)provider
 {
     NSLog(@"load image throw error :%@",[provider getCurrentURL]);
-    provider.finishLoad = YES;
+//    provider.finishLoad = YES;
     counter ++;
     [self loadOneByOneImage];
     if (provider.mode== ProvierModeUserMostActive) {

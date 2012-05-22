@@ -20,7 +20,7 @@
 
 @end
 
-@interface DetailVenueViewControllerIpad : UIViewController<UITableViewDelegate,UITableViewDataSource,MorePhotosDelegate,PhotosViewControllerDelegate,ImagesProfileProviderDelegate,MoreTisProviderDelegate,TableViewTipsDelegate>
+@interface DetailVenueViewControllerIpad : UIViewController<UITableViewDelegate,UITableViewDataSource,MorePhotosDelegate,PhotosViewControllerDelegate,ImagesProfileProviderDelegate,MoreTisProviderDelegate,TableViewTipsDelegate,CloseRequestFromSubview>
 
 @property (nonatomic, retain) NSDictionary *dictInfo;
 @property (nonatomic, retain) IBOutlet UITableView *tableView;

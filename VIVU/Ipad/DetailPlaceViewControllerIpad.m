@@ -111,6 +111,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     [self.view setAutoresizingMask:UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleHeight];
+    self.btnTips.hidden = YES;
+    self.btnPhoto.hidden = YES;
 }
 
 - (void)viewDidUnload
@@ -174,7 +176,7 @@
                 
                 NSArray *array = [NSArray arrayWithObject:index];
                 [tableViewTips.tableView reloadRowsAtIndexPaths:array withRowAnimation:UITableViewRowAnimationMiddle];
-                break;
+//                break;
             }
         }
     }
@@ -376,6 +378,8 @@
     }
     self.btnTips.frame = frame;
     [self addTipsToViewDetail:self.btnTips.frame.origin.y+23];
+    self.btnTips.hidden = NO;
+    self.btnPhoto.hidden = NO;
     
     
 }
@@ -501,7 +505,7 @@
 //    [self presentModalViewController:photosDetailView animated:YES];
 //    [self.view addSubview:photosDetailView.view];
 }
-#pragma mark PhotoScrollView Controller
+
 -(void)showMorePhotos:(id)sender
 {
     if (!photosViewController) {
@@ -510,6 +514,7 @@
 //    photosViewController.modalPresentationStyle = UIModalPresentationFullScreen;
 //    photosViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     photosViewController.numberPhotos =self.numberPhotos;
+    photosViewController.delegatePhotosView = self;
     [self.delegate pushMorePhotosViewControllerFromMainView:photosViewController];
 //    [self presentModalViewController:photosViewController animated:YES];
     //    [photosViewController createBasicViewPhotos];
@@ -536,7 +541,36 @@
     
 }
 
-
+#pragma mark ClosePhotosView Delegate Controller
+-(void)requestMoreProviderWithSubArrayPhotos:(NSMutableArray *)subArrayPhotos
+{
+    if (self.arrayProvider) {
+        for (ImagesProfileProvider *imageProvider in arrayProvider) {
+            if (imageProvider.loadingData==YES) {
+                [imageProvider cancelDownloadProvider];
+            }
+        }
+    }else {
+        self.arrayProvider = [NSMutableArray array];
+    }
+    for(NSDictionary *dictPhoto in subArrayPhotos)
+    {
+        ImagesProfileProvider *imageProvider =[[ImagesProfileProvider alloc]init];
+        [imageProvider configURLByURL:[dictPhoto objectForKey:@"minUrl"]];
+        imageProvider.ImagesProfileDelegate =self;
+        imageProvider.mode = ProviderModeImage;
+        imageProvider.categoryName = [dictPhoto objectForKey:@"id"];
+        [arrayProvider addObject:imageProvider];
+        [imageProvider release];
+    }
+    self.counter =0;
+    [self loadOneByOneImage];
+}
+-(void)closeRequestImageProvider
+{
+    
+    [VIVUtilities closeRequestImageProviderWithArrayProvider:arrayProvider];
+}
 #pragma mark MorePhotoProvider Delegate
 -(void)MorePhotosDidFinishParsing:(MorePhotosProvider *)provider
 {
@@ -545,6 +579,7 @@
         self.arrayProvider = [NSMutableArray array];
         photosViewController.arrayPhotos = arrayFullPhotos;
         [photosViewController createSubPhotosWithIndex:1];
+        [photosViewController clearAllImageInView];
         [photosViewController createBasicViewPhotosForPopOver:1];
 //        [photosViewController createBasicViewPhotos];
         for(NSDictionary *dictPhoto in photosViewController.subArrayPhotos)
@@ -614,7 +649,7 @@
 }
 -(void)ImagesProfileProviderDidFinishWithError:(NSError *)error provider:(ImagesProfileProvider *)provider
 {
-    provider.finishLoad = YES;
+//    provider.finishLoad = YES;
     counter ++;
     [self loadOneByOneImage];
     

@@ -44,7 +44,7 @@
     [formatter setDateFormat:@"YYYYMMdd"];
     NSString *strDate = [formatter stringFromDate:date];
     
-    URL = [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/search?ll=%f,%f&oauth_token= TWIGXJFDA112OFRJLP0OS2UBJMMGZ5EID2MGQFQLZO4QAKOJ&radius=1200&v=%@",location.coordinate.latitude,location.coordinate.longitude,strDate];
+    URL = [NSString stringWithFormat:@"https://api.foursquare.com/v2/venues/search?ll=%f,%f&oauth_token= TWIGXJFDA112OFRJLP0OS2UBJMMGZ5EID2MGQFQLZO4QAKOJ&radius=1200&limit=50&v=%@",location.coordinate.latitude,location.coordinate.longitude,strDate];
     URL = [URL stringByAddingPercentEscapesUsingEncoding:NSASCIIStringEncoding];
     self.resultContent =[NSMutableArray array];
     NSLog(@"%@",URL);

@@ -83,6 +83,16 @@
         return YES;
     }
 }
++(void) closeRequestImageProviderWithArrayProvider:(NSMutableArray *)arrayProvider
+{
+    {
+        for (ImagesProfileProvider *provider in arrayProvider) {
+            if (provider.loadingData ==YES) {
+                [provider cancelDownloadProvider];
+            }
+        }
+    }
+}
 #pragma mark Load Images
 -(void) initArrayProvider:(NSMutableArray *)arrayImages12  controller:(id)controller withMode:(ProvierMode)mode
 {

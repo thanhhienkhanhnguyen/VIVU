@@ -37,7 +37,7 @@
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="IBUIView" id="160082909">
 						<reference key="NSNextResponder" ref="766721923"/>
-						<int key="NSvFlags">292</int>
+						<int key="NSvFlags">256</int>
 						<array class="NSMutableArray" key="NSSubviews">
 							<object class="IBUITableView" id="634364334">
 								<reference key="NSNextResponder" ref="160082909"/>
@@ -45,6 +45,7 @@
 								<string key="NSFrameSize">{768, 1004}</string>
 								<reference key="NSSuperview" ref="160082909"/>
 								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<object class="NSColor" key="IBUIBackgroundColor">
 									<int key="NSColorSpace">3</int>
@@ -78,8 +79,8 @@
 				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="160082909"/>
 				<object class="NSColor" key="IBUIBackgroundColor">
-					<int key="NSColorSpace">2</int>
-					<bytes key="NSRGB">MC4wNDcwNTg4MjgxOCAwLjcxMzcyNTUwNzMgMSAwAA</bytes>
+					<int key="NSColorSpace">1</int>
+					<bytes key="NSRGB">MSAxIDEAA</bytes>
 				</object>
 				<bool key="IBUIClearsContextBeforeDrawing">NO</bool>
 				<object class="IBUISimulatedStatusBarMetrics" key="IBUISimulatedStatusBarMetrics">

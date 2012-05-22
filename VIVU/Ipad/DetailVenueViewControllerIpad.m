@@ -239,6 +239,7 @@
         if (!photosViewController) {
             photosViewController = [[PhotosViewController alloc]initWithNibName:@"PhotosViewControllerIpad" bundle:nil];
             photosViewController.delegate = self;
+            photosViewController.delegatePhotosView = self;
         }
         photosViewController.isBelongToPopOver = YES;
         [self.navigationController pushViewController:photosViewController animated:YES];
@@ -457,6 +458,14 @@
     
 }
 #pragma mark Photos View Controller Delegate
+//-(void) closeRequestImageProvider
+//{
+//    //implement for detail in popOver
+//}
+-(void) closeRequestImageProvider
+{
+    [VIVUtilities closeRequestImageProviderWithArrayProvider:arrayProvider];
+}
 -(void) rePresentPopOverFromPhotosViewController
 {
     [self.delegate rePresentPopOVerFromDetailVenue];
@@ -467,7 +476,7 @@
         for(ImagesProfileProvider *imageProvider in arrayProvider)
         {
             if (imageProvider.loadingData==YES) {
-                [imageProvider cancelDownload];
+                [imageProvider cancelDownloadProvider];
             }
             
         }
@@ -500,7 +509,7 @@
     if (arrayProvider) {
         for (ImagesProfileProvider *provider in arrayProvider ) {
             if (provider.loadingData) {
-                [provider cancelDownload];
+                [provider cancelDownloadProvider];
             }
         }
     }

@@ -25,10 +25,11 @@
 @synthesize arrayImages;
 @synthesize arrayProvider;
 @synthesize counter;
+@synthesize detailVenueViewController;
 
 -(void)dealloc{
     
-    
+    [detailVenueViewController release];
     [arrayProvider release];
     [arrayImages release];
     [detailViewController release];
@@ -41,21 +42,30 @@
     [dataSourceTableView release];
     [super dealloc];
 }
-
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self setContentSizeForViewInPopover:CGSizeMake(330, 286)];
+    
+    CGRect frame = self.view.bounds;
+    frame.size = [self sizeInPopoverView];
+    if ([dataSourceTableView count]>6) {
+        frame.size.height = [self sizeInPopoverView].height -44;
+    }else {
+        frame.size.height = [dataSourceTableView count]*44;
+    }
+    
+    [self.tableView setFrame:frame];
+}
 -(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    [super touchesEnded:touches withEvent:event];
     [self.delegate closeTableView];
 }
 -(CGSize)sizeInPopoverView
 {
    
-    int count = [self.dataSourceTableView count];
-    CGFloat h = count * 44;
-    //    h += 44; //for navigation bar
-    if (h>44*10) {
-        h=44*10;
-    }
-    return CGSizeMake(320-20, h);
+    return CGSizeMake(330, 330);
 }
 #pragma table Delegate
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -137,7 +147,16 @@
 {
     NSDictionary *dictInfo = [dataSourceTableView objectAtIndex:indexPath.row];
     if (dictInfo) {
-        [self.delegate showDetailPlaceWithDictInfo:dictInfo];
+//        [self.delegate showDetailPlaceWithDictInfo:dictInfo];//oldversion
+        if (!self.detailVenueViewController) {
+            detailVenueViewController = [[DetailVenueViewControllerIpad alloc]initWithNibName:@"DetailVenueViewControllerIpad" bundle:nil];
+        }else {
+            [detailVenueViewController release];
+            detailVenueViewController = nil;
+            detailVenueViewController = [[DetailVenueViewControllerIpad alloc]initWithNibName:@"DetailVenueViewControllerIpad" bundle:nil];
+        }
+        detailVenueViewController.dictInfo = dictInfo;
+        [self.navigationController pushViewController:detailVenueViewController animated:YES];
     }
     
 }
@@ -161,6 +180,8 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    [self.tableView setBackgroundView:nil];
+    [self.tableView setBackgroundColor:[UIColor whiteColor]];
 }
 
 - (void)viewDidUnload

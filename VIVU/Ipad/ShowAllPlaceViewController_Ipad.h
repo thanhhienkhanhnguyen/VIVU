@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "DetailPlaceProvider.h"
 #import "DetailPlaceViewControllerViewController.h"
+#import "DetailVenueViewControllerIpad.h"
 
 @protocol ShowPlaceTableDelegateIpad <NSObject>
 
@@ -31,6 +32,7 @@
 @property (nonatomic, retain) NSMutableArray *arrayImages;
 @property (nonatomic, retain) NSMutableArray *arrayProvider;
 @property (nonatomic, assign) NSInteger counter;
+@property (nonatomic, retain) DetailVenueViewControllerIpad *detailVenueViewController;
 
 
 -(CGSize)sizeInPopoverView;

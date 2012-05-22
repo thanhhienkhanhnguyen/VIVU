@@ -41,5 +41,6 @@ typedef enum
 @property (nonatomic, assign) BOOL finishLoad;
 -(void)configURLByURL:(NSString *)link;
 -(NSString*) getCurrentURL;
+-(void) cancelDownloadProvider;
 
 @end
