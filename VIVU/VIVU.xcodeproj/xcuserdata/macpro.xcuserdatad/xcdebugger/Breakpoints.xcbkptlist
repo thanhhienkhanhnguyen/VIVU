@@ -20,39 +20,39 @@
          shouldBeEnabled = "Yes"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "Class/PhotosScrollViewController.m"
-         timestampString = "358932890.73324"
+         filePath = "VIVU/ShowAllPlaceViewController.m"
+         timestampString = "359369289.339672"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "46"
-         endingLineNumber = "46"
-         landmarkName = "-closeImagesViewController:"
-         landmarkType = "5">
-      </FileBreakpoint>
-      <FileBreakpoint
-         shouldBeEnabled = "No"
-         ignoreCount = "0"
-         continueAfterRunningActions = "No"
-         filePath = "VIVU/ViewController.m"
-         timestampString = "358942522.245823"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "683"
-         endingLineNumber = "683"
-         landmarkName = "-initAnnotations:"
+         startingLineNumber = "589"
+         endingLineNumber = "589"
+         landmarkName = "-disMissDetailViewController"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
          shouldBeEnabled = "Yes"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "Ipad/DetailPlaceViewControllerIpad.m"
-         timestampString = "359000741.725898"
+         filePath = "Class/DetailPlaceViewControllerViewController.m"
+         timestampString = "359522863.241608"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "483"
-         endingLineNumber = "483"
-         landmarkName = "-showDetailPhoto:"
+         startingLineNumber = "763"
+         endingLineNumber = "763"
+         landmarkName = "-closeView"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "Yes"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "Ipad/SearchVenueViewController.m"
+         timestampString = "359439752.035884"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "52"
+         endingLineNumber = "52"
+         landmarkName = "-searchBarCancelButtonClicked:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

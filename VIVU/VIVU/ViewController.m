@@ -164,6 +164,7 @@
     [self installUncaughtExceptionHandler];
     currentFramePopOver = CGRectNull;
     currentAnnotation  =nil;
+//    popOverEnable = NO;
     
     
    // userTrackingMode.MKUserTrackingModeFollowWithHeading
@@ -688,9 +689,12 @@
         if (popoverController) {
             if (popoverController.popoverVisible==NO) {
                 [self requestNewLocation:newLocation];
-            }else {
-                //don't loading new annotation when popOver is visible
+            }else if (popoverController.popoverContentSize.height>400) {
+                //popOver and allow loading new location
+                [self requestNewLocation:newLocation];
             }
+                //don't loading new annotation when popOver is visible
+        
         }else {
             [self requestNewLocation:newLocation];
         }
@@ -945,6 +949,7 @@
 }
 -(void)searchPlaceInPopOver:(id)sender
 {
+//    popOverEnable = YES;
     currentAnnotation = nil;//see confip App
     if (self.popoverController != nil) {
         if (popoverController.popoverVisible == YES) {
@@ -1061,6 +1066,7 @@
 }
 -(void) showALLPlaceInPopOver:(id)sender
 {
+//    popOverEnable = YES;
     currentAnnotation =nil;//see confip App
     if (self.popoverController != nil) {
         if (popoverController.popoverVisible == YES) {
@@ -1467,6 +1473,7 @@
             [popoverController dismissPopoverAnimated:YES];
             [popoverController release];
             popoverController = nil;
+            
         }
     }
 }

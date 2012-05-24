@@ -35,6 +35,7 @@
     NSMutableArray *annotations;
     BOOL isVisibleTableView;
     BOOL allowLoadingMap;
+//    BOOL popOverEnable;
     MKAnnotationView *currentAnnotation;
 
 }
