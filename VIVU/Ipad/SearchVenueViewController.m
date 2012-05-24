@@ -47,6 +47,10 @@
     [self.tableViewSearch reloadData];
     
 }
+-(void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    [self.delegate dismissPopOverFromSearchView];
+}
 -(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     [searchBar resignFirstResponder];
@@ -126,11 +130,18 @@
     }
     return self;
 }
-
+-(void) closeSearchView:(id)sender
+{
+    [self.delegate dismissPopOverFromSearchView];
+}
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    UIBarButtonItem *btnCancel = [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(closeSearchView:)];
+//    UIBarButtonItem *btnCancel = [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(closeSearchView:)];
+    self.navigationItem.leftBarButtonItem = btnCancel;
+    [btnCancel release];
 }
 -(void)viewWillAppear:(BOOL)animated
 {

@@ -11,7 +11,9 @@
 
 -(void)dealloc
 {
+//    NSLog(@"tetea:%d",dictInfor.retainCount);
     [dictInfor release];
+//    self.dictInfor = nil;
     [categoryName release];
     [itemId release];
     [super dealloc];
@@ -45,10 +47,10 @@
 {
     [self initWithCoordinate:coorSpiner];
     if (self) {
-        dictInfor = nil;
+        self.dictInfor = nil;
         coordinate = coorSpiner;
-        categoryName = categorySpiner;
-        itemId = idSpiner; 
+        self.categoryName = categorySpiner;
+        self.itemId = idSpiner; 
         distance = distanParameter;
         
     }

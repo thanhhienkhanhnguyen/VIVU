@@ -187,6 +187,7 @@
                 return [urlStr1 compare:urlStr2];
             }];
             NSDictionary *dictDetail = [resultDatasource  objectAtIndex:indexPath.row];
+            cell.textLabel.font =[UIFont fontWithName:@"HelveticaNeue-Bold" size:12];
             cell.textLabel.text = [dictDetail objectForKey:@"name"];
             //    UILabel *distanceLabel = (UILabel *)[cell.contentView viewWithTag:SubDetail];
             NSDictionary *location = [dictDetail objectForKey:@"location"];
@@ -196,8 +197,7 @@
             
             cell.detailTextLabel.text = temp;
             cell.detailTextLabel.textColor =[UIColor whiteColor];
-            cell.detailTextLabel.font = [UIFont fontWithName:@"" size:12];
-            cell.textLabel.font =[UIFont fontWithName:@"" size:9];
+            cell.detailTextLabel.font =[UIFont fontWithName:@"HelveticaNeue" size:9];
             cell.textLabel.textColor = [UIColor whiteColor];
             [cell.detailTextLabel setBackgroundColor:[UIColor clearColor]];
             [cell.textLabel setBackgroundColor:[UIColor clearColor]];

@@ -12,6 +12,7 @@
 @protocol SearchVenueViewControllerDelegate <NSObject>
 
 -(void) pushDetailVenueFromSearchController:(NSDictionary *)dictDetail;
+-(void) dismissPopOverFromSearchView;
 
 @end
 
@@ -23,5 +24,6 @@
 @property (nonatomic,assign) id<SearchVenueViewControllerDelegate> delegate;
 @property (nonatomic,retain) IBOutlet UITableView *tableViewSearch;
 @property (nonatomic,retain) NSMutableArray *resultDatasource;
+
 
 @end

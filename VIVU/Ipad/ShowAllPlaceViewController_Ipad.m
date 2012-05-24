@@ -187,10 +187,20 @@
             detailVenueViewController = nil;
             detailVenueViewController = [[DetailVenueViewControllerIpad alloc]initWithNibName:@"DetailVenueViewControllerIpad" bundle:nil];
         }
+        detailVenueViewController.delegate = self;
         detailVenueViewController.dictInfo = dictInfo;
         [self.navigationController pushViewController:detailVenueViewController animated:YES];
     }
     
+}
+#pragma mark DetailVenue Delegate
+-(void)rePresentPopOVerFromDetailVenue
+{
+    [self.delegate rePresentPopOverFromTableView];
+}
+-(void)loadDetailPhotoFromPopOver:(PhotosScrollViewController *)photosScrollViewController
+{
+    [self.delegate loadDetailPhotosFromGroupPlace:photosScrollViewController];
 }
 -(void) DetailPlaceDidFinishParsing:(DetailPlaceProvider *)provider
 {
@@ -214,6 +224,7 @@
     // Do any additional setup after loading the view from its nib.
     [self.tableView setBackgroundView:nil];
     [self.tableView setBackgroundColor:[UIColor whiteColor]];
+    
 }
 
 - (void)viewDidUnload

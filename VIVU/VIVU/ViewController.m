@@ -66,9 +66,14 @@
 @synthesize searchVenueController;
 @synthesize currentFramePopOver;
 @synthesize tempDetailVenueViewController;
+@synthesize tempShowPlaceInTableViewController;
+@synthesize oldRadian;
+@synthesize panelView;
 -(void)dealloc
 {
+    [panelView release];
     [tempDetailVenueViewController release];
+    [tempShowPlaceInTableViewController release];
     [searchVenueController release];
     [photosViewControllerMainView release];
     [detailVenueViewController release];
@@ -101,6 +106,7 @@
     [super dealloc];
 }
 #pragma mark App Life Cycle
+
 -(void)viewWillAppear:(BOOL)animated
 {
     
@@ -144,6 +150,7 @@
 	// Do any additional setup after loading the view, typically from a nib.
     allowLoadingMap = YES;
     [self setRegion:self.coorCurent];
+    self.panelView.hidden = YES;
 //    NSArray *array = self.mapView.gestureRecognizers;
 //    for(UIGestureRecognizer *get in array)
 //    {
@@ -158,6 +165,9 @@
     currentFramePopOver = CGRectNull;
     currentAnnotation  =nil;
     
+    
+   // userTrackingMode.MKUserTrackingModeFollowWithHeading
+    
 }
 
 - (void)viewDidUnload
@@ -168,7 +178,9 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-
+    if (enableCompass) {
+        return NO;
+    }
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
         return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
     } else {
@@ -209,6 +221,16 @@
             
         }
         
+    }
+    if (self.spinView) {
+        if ([VIVUtilities isIpadDevice]) {
+            CGSize size = [VIVUtilities getSizeDevice];
+            NSInteger width = 200;
+            CGRect frame = CGRectMake((size.width/2-width/2), -20, width, 80);
+            CGRect framefix = self.spinView.frame;
+            framefix.origin.x = frame.origin.x;
+            [self.spinView setFrame:framefix];
+        }
     }
 }
 
@@ -381,7 +403,7 @@
             [showGroupTableViewIphone.cheatView.layer setBorderColor:[UIColor greenColor].CGColor];
             [showGroupTableViewIphone.cheatView.layer setBorderWidth:2.0f];
             [showGroupTableViewIphone.cheatView.layer setCornerRadius:5.0f];
-            [self.mapView deselectAnnotation:view.annotation animated:YES];
+            [self.mapView deselectAnnotation:view.annotation animated:NO];
             
                        
 
@@ -403,13 +425,20 @@
                     showAllPlaceTableViewIpad = [[ShowAllPlaceViewController_Ipad alloc]initWithNibName:@"ShowAllPlaceViewController_Ipad" bundle:nil];
                     showAllPlaceTableViewIpad.delegate =self;
                 }else {
-                    [showAllPlaceTableViewIpad.dataSourceTableView removeAllObjects];
+                    [showAllPlaceTableViewIpad release];
+                    showAllPlaceTableViewIpad = nil;
+                    showAllPlaceTableViewIpad = [[ShowAllPlaceViewController_Ipad alloc]initWithNibName:@"ShowAllPlaceViewController_Ipad" bundle:nil];
+                    showAllPlaceTableViewIpad.delegate = self;
                 }
+//                }else {
+//                    [showAllPlaceTableViewIpad.dataSourceTableView removeAllObjects];
+//                }
                 showAllPlaceTableViewIpad.dataSourceTableView  =[NSMutableArray arrayWithArray:arrayDataSource];
                 [showAllPlaceTableViewIpad.tableView reloadData];
-                
-                
+                                
                 UINavigationController *content = [[UINavigationController alloc] initWithRootViewController:showAllPlaceTableViewIpad];
+                
+
                 popoverController = [[UIPopoverController alloc] initWithContentViewController:showAllPlaceTableViewIpad.navigationController];
                 popoverController.delegate = self;
 //                CGSize popOverSize = [showAllPlaceTableViewIpad sizeInPopoverView];
@@ -435,6 +464,7 @@
                 //                [detailVenueViewController release];
                 //                detailVenueViewController = nil;
 //                self.tempDetailVenueViewController = detailVenueViewController;
+                self.tempShowPlaceInTableViewController = showAllPlaceTableViewIpad;
                 [content release];
                 [arrayDataSource release];
                 [displayLabel release];
@@ -443,7 +473,7 @@
                 [self.mapView setCenterCoordinate:coor animated:YES];
             
                 [self refreshALLCustomBadge];
-                [self.mapView deselectAnnotation:view.annotation animated:YES];
+                [self.mapView deselectAnnotation:view.annotation animated:NO];
 
 
             }
@@ -518,6 +548,7 @@
                 id<MKAnnotation> anno = view.annotation;
                 CLLocationCoordinate2D coor = anno.coordinate;
                 [self.mapView setCenterCoordinate:coor animated:YES];
+                [self.mapView deselectAnnotation:view.annotation animated:NO];
                 [self refreshALLCustomBadge];
 //                [self initAnnotations:tempDataSourceTableView];
 //                [self refreshAllAnnotation];
@@ -731,7 +762,12 @@
 -(void)initAnnotations:(NSMutableArray *)resultContent
 {
     if (resultContent) {
-        annotations = [[NSMutableArray array]retain];
+        if (!annotations) {
+            annotations = [[NSMutableArray array]retain];
+        }else {
+            [annotations removeAllObjects];
+        }
+        
         for (int i =0; i< [resultContent count]; i++) {
             NSDictionary *dictInfor = [resultContent objectAtIndex:i];
             NSDictionary *dictLocation = [dictInfor objectForKey:@"location"];
@@ -740,11 +776,12 @@
             CGFloat distance = [[dictLocation objectForKey:@"distance"]floatValue];
             CLLocationCoordinate2D coorSpiner = {.latitude = lat , .longitude =  lng};
             
-            SingleAnnotation *annotation = [[[SingleAnnotation alloc]initSingleAnnatation:[dictInfor objectForKey:@"type"] itemID:[dictInfor objectForKey:@"id"] coorSpiner:coorSpiner distanceParameter:distance]autorelease];
+            SingleAnnotation *annotation = [[SingleAnnotation alloc]initSingleAnnatation:[dictInfor objectForKey:@"type"] itemID:[dictInfor objectForKey:@"id"] coorSpiner:coorSpiner distanceParameter:distance];
             annotation.dictInfor = dictInfor;
             
             //            [annotations addObject:[[[SingleAnnotation alloc] initWithCoordinate:coorSpiner] autorelease]];
             [annotations addObject:annotation];
+            [annotation release];
             
             //            ImagesProfileProvider *imageProvider =[[ImagesProfileProvider alloc]init];
             //            imageProvider.categoryName = [dictInfor objectForKey:@"type"];
@@ -781,10 +818,58 @@
 //            [mapView addAnnotations:annotations withGroupDistance:dist];
 //    }
 }
+-(BOOL)locationManagerShouldDisplayHeadingCalibration:(CLLocationManager *)manager
+{
+    return YES;
+}
 -(void)locationManager:(CLLocationManager *)manager didUpdateHeading:(CLHeading *)newHeading
 {
-    if (enableCompass) {    
-        [self.mapView setTransform:CGAffineTransformMakeRotation(-1 * newHeading.magneticHeading * 3.14159 / 180)]  ;
+    if (enableCompass) {  
+
+        
+        float oldRad =  -manager.heading.magneticHeading * M_PI / 180.0f;
+        float newRad =  -newHeading.magneticHeading * M_PI / 180.0f;		
+        CABasicAnimation *theAnimation;
+        theAnimation=[CABasicAnimation animationWithKeyPath:@"transform.rotation"];
+        theAnimation.fromValue = [NSNumber numberWithFloat:oldRad];
+        theAnimation.toValue=[NSNumber numberWithFloat:newRad];
+        theAnimation.duration = 0.5f;    
+        [self.mapView.layer addAnimation:theAnimation forKey:@"animateMyRotation"];
+        if (oldRad ==self.oldRadian) {
+            [UIView beginAnimations:@"start compass" context:nil];
+             self.mapView.transform = CGAffineTransformMakeRotation(newRad);
+            [UIView commitAnimations];
+        }else {
+             self.mapView.transform = CGAffineTransformMakeRotation(newRad);
+        }
+        
+       
+//        self.view.transform =CGAffineTransformMakeRotation(newRad);
+//        CGRect frame = self.mapView.frame;
+//        frame.size =self.view.frame.size;
+//        self.mapView.frame = frame;
+//        CGRect frame = self.mapView.frame;
+//        CGSize size = [VIVUtilities getSizeDevice];
+//        frame.size =size;
+//        self.mapView.frame = frame;
+          NSLog(@"update from %f (%f) => %f (%f)", manager.heading.magneticHeading, oldRad, newHeading.magneticHeading, newRad);
+//        NSLog()
+        
+
+//        [self.mapView setTransform:CGAffineTransformMakeRotation(-1 * newHeading.magneticHeading * M_PI / 180)]  ;
+//        for (id <MKAnnotation> anno in self.mapView.annotations) {
+//            MKAnnotationView *annotationView = [self.mapView viewForAnnotation:anno]; 
+//            [annotationView setTransform:CGAffineTransformMakeRotation(-1*newHeading.trueHeading * M_PI / 180)];
+//            annotationView.layer.anchorPoint = CGPointMake(0.5, 1.0);
+//
+//        }
+//        for(UIView *subView in self.mapView.subviews)
+//        {
+//            if ([subView isKindOfClass:[CustomBadge class]]) {
+//                [subView setTransform:CGAffineTransformMakeRotation(-1 * newHeading.magneticHeading * M_PI / 180)]  ;
+//            }
+//        }
+
     }
   
 }
@@ -864,44 +949,49 @@
     if (self.popoverController != nil) {
         if (popoverController.popoverVisible == YES) {
             [popoverController dismissPopoverAnimated:YES];
+            [popoverController release];
+            popoverController = nil;
         }
-        [popoverController release];
-        popoverController = nil;
-    }
-    if (!self.searchVenueController) {
-        self.searchVenueController = [[SearchVenueViewController alloc]initWithNibName:@"SearchVenueViewController" bundle:nil];
-        searchVenueController.delegate = self;
-        if (tempDataSourceTableView) {
-            searchVenueController.dataSourceTableView = tempDataSourceTableView;
+        
+    }else {
+        if (!self.searchVenueController) {
+            searchVenueController = [[SearchVenueViewController alloc]initWithNibName:@"SearchVenueViewController" bundle:nil];
+            searchVenueController.delegate = self;
+            if (tempDataSourceTableView) {
+                searchVenueController.dataSourceTableView = tempDataSourceTableView;
+            }
         }
+        if (!self.requestLocations) {
+            requestLocations = [[SearchPlaceProvider alloc]init];
+            requestLocations.delegate =self;
+        }
+        if (!placeTableViewControllerIpad.dataSourceTableView) {
+            [requestLocations configURL:self.coorCurent];
+            [requestLocations requestData];
+        }
+        UINavigationController *content = [[UINavigationController alloc] initWithRootViewController:searchVenueController];
+        self.popoverController = [[UIPopoverController alloc] initWithContentViewController:searchVenueController.navigationController];
+        popoverController.passthroughViews = [[[NSArray alloc] initWithObjects:self.view, nil] autorelease];
+        
+        popoverController.delegate = self;
+        //    CGSize popOverSize = [placeTableViewControllerIpad sizeInPopoverView];
+        CGSize popOverSize = CGSizeMake(330, [VIVUtilities getSizeDevice].height-100);
+        popoverController.popoverContentSize = popOverSize; 
+        //                CGRect frame = detailVenueViewController.view.frame;
+        //                //        CGRect ff = self.view.bounds;
+        //                frame.size.height = popOverSize.height;
+        //                frame.size.width = 250;
+        //                detailVenueViewController.view.frame = frame;
+        //                [detailVenueViewController.tableView setBackgroundColor:[UIColor whiteColor]];
+        //        showGroupTableView.tableView.frame = frame;
+        
+        //                CGPoint annotationPoint = [self.mapView convertCoordinate:view.annotation.coordinate toPointToView:self.view];
+        
+        [popoverController presentPopoverFromRect:((UIButton *)sender).frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+        
+        [content release];
     }
-    if (!self.requestLocations) {
-        requestLocations = [[SearchPlaceProvider alloc]init];
-        requestLocations.delegate =self;
-    }
-    if (!placeTableViewControllerIpad.dataSourceTableView) {
-        [requestLocations configURL:self.coorCurent];
-        [requestLocations requestData];
-    }
-    UINavigationController *content = [[UINavigationController alloc] initWithRootViewController:searchVenueController];
-    self.popoverController = [[UIPopoverController alloc] initWithContentViewController:searchVenueController.navigationController];
-    popoverController.delegate = self;
-    //    CGSize popOverSize = [placeTableViewControllerIpad sizeInPopoverView];
-    CGSize popOverSize = CGSizeMake(330, [VIVUtilities getSizeDevice].height-100);
-    popoverController.popoverContentSize = popOverSize; 
-    //                CGRect frame = detailVenueViewController.view.frame;
-    //                //        CGRect ff = self.view.bounds;
-    //                frame.size.height = popOverSize.height;
-    //                frame.size.width = 250;
-    //                detailVenueViewController.view.frame = frame;
-    //                [detailVenueViewController.tableView setBackgroundColor:[UIColor whiteColor]];
-    //        showGroupTableView.tableView.frame = frame;
-    
-    //                CGPoint annotationPoint = [self.mapView convertCoordinate:view.annotation.coordinate toPointToView:self.view];
-    
-    [popoverController presentPopoverFromRect:((UIButton *)sender).frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
-    
-    [content release];
+   
 
    
 }
@@ -914,11 +1004,11 @@
         searchController =[[SearchViewController alloc]initWithNibName:@"SearchViewController" bundle:nil];
         searchController.delegate =self;
         if (tempDataSourceTableView) {
-            searchController.dataSourceTableView = tempDataSourceTableView;
+            searchController.dataSourceTableView = [NSArray arrayWithArray:tempDataSourceTableView];
         }
 //        navi = [[UINavigationController alloc]initWithRootViewController:searchController];
     }else {
-        searchController.dataSourceTableView = tempDataSourceTableView;
+        searchController.dataSourceTableView = [NSArray arrayWithArray:tempDataSourceTableView];;
         [searchController.resultDatasource removeAllObjects];
     }
 //    self.navigationController.navigationBarHidden = NO;
@@ -949,6 +1039,14 @@
     
     if (enableCompass) {
         enableCompass = NO;
+        if (locationManager) {
+            [locationManager stopUpdatingHeading];
+            [UIView beginAnimations:@"stop tranform" context:nil];
+            self.mapView.transform = CGAffineTransformMakeRotation(self.oldRadian);
+            [UIView commitAnimations];
+        }
+//        mapView.userTrackingMode = MKUserTrackingModeNone;
+//        [self.mapView setTransform:CGAffineTransformMakeRotation(1)];
     }else {
         enableCompass = YES;
         if (!locationManager) {
@@ -956,6 +1054,7 @@
             locationManager.desiredAccuracy = kCLLocationAccuracyBest;
             locationManager.delegate=self;
         }
+//         mapView.userTrackingMode = MKUserTrackingModeFollowWithHeading;
         [locationManager startUpdatingHeading];
     }
 //    [self refreshAllAnnotation];
@@ -969,42 +1068,44 @@
         }
         [popoverController release];
         popoverController = nil;
-    }
-    if (!self.placeTableViewControllerIpad) {
-        self.placeTableViewControllerIpad = [[PlaceTableViewController alloc]initWithNibName:@"PlaceTableViewController" bundle:nil];
-        placeTableViewControllerIpad.delegate =self;
-        [placeTableViewControllerIpad.view setAutoresizingMask:(/*UIViewAutoresizingFlexibleWidth|*/UIViewAutoresizingFlexibleTopMargin|/*UIViewAutoresizingFlexibleRightMargin|*/UIViewAutoresizingFlexibleHeight)];
+    }else {
+        if (!self.placeTableViewControllerIpad) {
+            placeTableViewControllerIpad = [[PlaceTableViewController alloc]initWithNibName:@"PlaceTableViewController" bundle:nil];
+            placeTableViewControllerIpad.delegate =self;
+            [placeTableViewControllerIpad.view setAutoresizingMask:(/*UIViewAutoresizingFlexibleWidth|*/UIViewAutoresizingFlexibleTopMargin|/*UIViewAutoresizingFlexibleRightMargin|*/UIViewAutoresizingFlexibleHeight)];
+            
+            
+        }
+        if (!self.requestLocations) {
+            requestLocations = [[SearchPlaceProvider alloc]init];
+            requestLocations.delegate =self;
+        }
+        if (!placeTableViewControllerIpad.dataSourceTableView) {
+            [requestLocations configURL:self.coorCurent];
+            [requestLocations requestData];
+        }
+        UINavigationController *content = [[UINavigationController alloc] initWithRootViewController:placeTableViewControllerIpad];
+        popoverController = [[UIPopoverController alloc] initWithContentViewController:placeTableViewControllerIpad.navigationController];
+        popoverController.passthroughViews = [[[NSArray alloc] initWithObjects:self.view, nil] autorelease];
+        popoverController.delegate = self;
+        //    CGSize popOverSize = [placeTableViewControllerIpad sizeInPopoverView];
+        CGSize popOverSize = CGSizeMake(330, [VIVUtilities getSizeDevice].height-100);
+        popoverController.popoverContentSize = popOverSize; 
+        //                CGRect frame = detailVenueViewController.view.frame;
+        //                //        CGRect ff = self.view.bounds;
+        //                frame.size.height = popOverSize.height;
+        //                frame.size.width = 250;
+        //                detailVenueViewController.view.frame = frame;
+        //                [detailVenueViewController.tableView setBackgroundColor:[UIColor whiteColor]];
+        //        showGroupTableView.tableView.frame = frame;
         
+        //                CGPoint annotationPoint = [self.mapView convertCoordinate:view.annotation.coordinate toPointToView:self.view];
         
+        [popoverController presentPopoverFromRect:((UIButton *)sender).frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+        
+        [content release];
     }
-    if (!self.requestLocations) {
-        requestLocations = [[SearchPlaceProvider alloc]init];
-        requestLocations.delegate =self;
-    }
-    if (!placeTableViewControllerIpad.dataSourceTableView) {
-        [requestLocations configURL:self.coorCurent];
-        [requestLocations requestData];
-    }
-   UINavigationController *content = [[UINavigationController alloc] initWithRootViewController:placeTableViewControllerIpad];
-    self.popoverController = [[UIPopoverController alloc] initWithContentViewController:placeTableViewControllerIpad.navigationController];
-
-    popoverController.delegate = self;
-//    CGSize popOverSize = [placeTableViewControllerIpad sizeInPopoverView];
-    CGSize popOverSize = CGSizeMake(330, [VIVUtilities getSizeDevice].height-100);
-    popoverController.popoverContentSize = popOverSize; 
-    //                CGRect frame = detailVenueViewController.view.frame;
-    //                //        CGRect ff = self.view.bounds;
-    //                frame.size.height = popOverSize.height;
-    //                frame.size.width = 250;
-    //                detailVenueViewController.view.frame = frame;
-    //                [detailVenueViewController.tableView setBackgroundColor:[UIColor whiteColor]];
-    //        showGroupTableView.tableView.frame = frame;
     
-    //                CGPoint annotationPoint = [self.mapView convertCoordinate:view.annotation.coordinate toPointToView:self.view];
-
-    [popoverController presentPopoverFromRect:((UIButton *)sender).frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
-    
-    [content release];
     
 
 }
@@ -1238,7 +1339,7 @@
         CGRect frame = CGRectMake((size.width/2-width/2), -20, width, 80);
         
         if (!self.spinView) {
-            self.spinView = [[UIView alloc]initWithFrame:frame];
+            spinView = [[UIView alloc]initWithFrame:frame];
             [spinView.layer setBorderWidth:5.0f];
             [spinView.layer setCornerRadius:10.0f];
             [spinView setBackgroundColor:[UIColor blackColor]];
@@ -1359,6 +1460,16 @@
         
 }
 #pragma mark Ipad Delegate
+-(void) closePopOver
+{
+    if (self.popoverController) {
+        if (popoverController.popoverVisible) {
+            [popoverController dismissPopoverAnimated:YES];
+            [popoverController release];
+            popoverController = nil;
+        }
+    }
+}
 -(void)rePresentPopOver
 {
     NSLog(@"asdasdasdsadd");
@@ -1367,20 +1478,50 @@
 {
     [self addDetailPlaceView:dictInfo];
 }
+-(void)dismissPopOverFromTableView
+{
+    if (popoverController) {
+        if (popoverController.popoverVisible) {
+            [popoverController dismissPopoverAnimated:YES];
+            [popoverController release];
+            popoverController = nil;
+        }
+        
+    }
+}
 -(void) tempFunction
 {
     if (popoverController) {
-        [popoverController dismissPopoverAnimated:YES];
-        [popoverController release];
-        popoverController = nil;
+        if (popoverController.popoverVisible) {
+            [popoverController dismissPopoverAnimated:YES];
+            [popoverController release];
+            popoverController = nil;
+        }
+        
     }else {
         if (tempDetailVenueViewController) {
-            self.popoverController =[[UIPopoverController alloc]initWithContentViewController:tempDetailVenueViewController.navigationController];
+            popoverController =[[UIPopoverController alloc]initWithContentViewController:tempDetailVenueViewController.navigationController];
             popoverController.delegate = self;
             CGSize popOverSize = [tempDetailVenueViewController sizeInPopoverView];
             popoverController.popoverContentSize = popOverSize; 
             
             [popoverController presentPopoverFromRect:currentFramePopOver inView:self.view permittedArrowDirections:UIPopoverArrowDirectionLeft animated:YES];
+        }
+        if (tempShowPlaceInTableViewController) {
+            if (tempShowPlaceInTableViewController.navigationController==nil) {
+                  UINavigationController *content = [[UINavigationController alloc] initWithRootViewController:tempShowPlaceInTableViewController];
+                popoverController =[[UIPopoverController alloc]initWithContentViewController:tempShowPlaceInTableViewController.navigationController];
+                popoverController.delegate = self;
+                CGSize popOverSize = [tempShowPlaceInTableViewController sizeInPopoverView];
+                popoverController.popoverContentSize = popOverSize; 
+                
+                [popoverController presentPopoverFromRect:currentFramePopOver inView:self.view permittedArrowDirections:UIPopoverArrowDirectionLeft animated:YES];
+                 [content release];
+                
+            }
+           
+           
+            
         }
         
     }
@@ -1405,6 +1546,16 @@
     [self pushPhotosViewControllerFromMainView:photosScrollViewController];
 }
 #pragma mark Ipad SearchVenue Delegate
+-(void)dismissPopOverFromSearchView
+{
+    if (self.popoverController) {
+        if (popoverController.popoverVisible) {
+            [popoverController dismissPopoverAnimated:YES];
+            [popoverController release];
+            popoverController = nil;
+        }
+    }
+}
 -(void) pushDetailVenueFromSearchController:(NSDictionary *)dictDetail
 {
     
@@ -1432,6 +1583,7 @@
 }
 -(void)loadDetailPhotos:(PhotosScrollViewController *)photosScrollView
 {
+    [self closePopOver];
     [self pushPhotosViewControllerFromMainView:photosScrollView];
     
 }
@@ -1478,7 +1630,7 @@
 //    frame.origin.y =0;
 //    photosViewController.view.frame = frame;
 //    [UIView commitAnimations];
-    
+    [self closePopOver];
     [self presentModalViewController:photosViewController animated:YES];
     CGFloat w =0;
     CGFloat h =0;
@@ -1513,6 +1665,23 @@
         detailPlaceViewControllerIpad = nil;
     }
 
+}
+#pragma mark Show All Place Delegate
+-(void)rePresentPopOverFromTableView
+{
+    [self tempFunction];
+
+}
+-(void) loadDetailPhotosFromGroupPlace:(PhotosScrollViewController *)photoScrollView
+{
+    if (self.popoverController) {
+        if (popoverController.popoverVisible) {
+            [popoverController dismissPopoverAnimated:YES];
+            [popoverController release];
+            popoverController = nil;
+        }
+    }
+    [self pushPhotosViewControllerFromMainView:photoScrollView];
 }
 -(void)showDetailPlaceWithDictInfo:(NSDictionary *)dictInfo
 {
@@ -1837,6 +2006,9 @@
                         //wire to file successful. release cache data
                         if (detailViewController) {
                             [detailViewController reloadImageById:provider.categoryName];
+                            if (detailViewController.photosViewController) {
+                                [detailViewController.photosViewController reloadPhotoById:provider.categoryName];
+                            }
                         }
                         if (detailPlaceViewControllerIpad) {
                             [detailPlaceViewControllerIpad reloadImageById:provider.categoryName];
@@ -1990,7 +2162,7 @@
             }
             
         }
-        tempDataSourceTableView = provider.resultContent;
+        self.tempDataSourceTableView = provider.resultContent;
         if ([VIVUtilities isIpadDevice]==NO) {
             if (!placeTableViewController.dataSourceTableView) {
                 self.dataSourceInTableView = [NSMutableArray arrayWithArray:provider.resultContent];

@@ -167,11 +167,21 @@
     }
     return self;
 }
-
+-(void)closePlaceTableView:(id)sender
+{
+    [self.delegate dismissPopOverFromTableView];
+}
 - (void)viewDidLoad
 {
     [super viewDidLoad];
    //
+    if (self.navigationController.navigationBarHidden==NO) {
+        //
+        UIBarButtonItem *btnCancel = [[UIBarButtonItem alloc]initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(closePlaceTableView:)];
+        self.navigationItem.leftBarButtonItem = btnCancel;
+        [btnCancel release];
+    }
+
 }
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {

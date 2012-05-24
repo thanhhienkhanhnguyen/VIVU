@@ -654,6 +654,7 @@
 //                            NSLog(@"index =%d",i);
                         }
                     }
+                    [self reloadImageById:provider.categoryName];
                     [photosViewController reloadPhotoById:provider.categoryName];
                     //                        [detailViewController configureView];
                     provider.returnData = [NSData data];

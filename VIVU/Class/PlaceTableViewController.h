@@ -13,6 +13,7 @@
 @protocol PlaceTableViewDelagate <NSObject>
 
 -(void)pushDetailFromPlaceTableView:(NSDictionary *)dictInfo;
+-(void) dismissPopOverFromTableView;
 
 @end
 

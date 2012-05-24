@@ -76,8 +76,11 @@
 {
 //    Log(@"Update mylocation with newlocation.latitude: %f && newlocation.longlatitude : %f",newLocation.coordinate.latitude,newLocation.coordinate.longitude);
     self.viewController.coorCurent = newLocation;
-    [self.viewController setRegion:newLocation];
     
+    [self.viewController setRegion:newLocation];
+    float oldRad =  -manager.heading.magneticHeading * M_PI / 180.0f;
+    self.viewController.oldRadian = oldRad;
+
 }
 - (void)applicationWillResignActive:(UIApplication *)application
 {

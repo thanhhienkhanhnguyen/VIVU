@@ -15,10 +15,12 @@
 
 -(void) closeTableView;
 -(void)showDetailPlaceWithDictInfo:(NSDictionary *)dictInfo;
+-(void) loadDetailPhotosFromGroupPlace:(PhotosScrollViewController*)photoScrollView;
+-(void) rePresentPopOverFromTableView;
 
 @end
 
-@interface ShowAllPlaceViewController_Ipad : UIViewController<DetailPlaceDelegate,UITableViewDelegate,UITableViewDataSource>
+@interface ShowAllPlaceViewController_Ipad : UIViewController<DetailPlaceDelegate,UITableViewDelegate,UITableViewDataSource,DetailVenueViewControllerDelegate>
 
 
 @property (nonatomic, retain) IBOutlet UITableView *tableView;

@@ -350,15 +350,37 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    if (isBelongToPopOver) {
-//        CGRect frame = self.view.frame;
-//        frame.size = CGSizeMake(330, 330);
-//        [self.view setFrame:frame];
+        if (isBelongToPopOver) {
         [self setContentSizeForViewInPopover:CGSizeMake(330, 330)];
         if (isBelongToPopOver) {
             self.btnClose.hidden = YES;
         } 
     }
+}
+-(void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+//    for(UIView *subView in self.scrollView.subviews)
+//    {
+//        
+//        if ([subView isKindOfClass:[CustomeButton class]]) {
+//            CustomeButton *btn = (CustomeButton *)subView;
+//            UIImage *image= btn.imageView.image;
+//            if (image.size.width <WIDTH_IMAGE) {
+//                
+//                NSString *filePath = [NSString stringWithFormat:@"%@/favicon/image/%@. jpg",
+//                                      [VIVUtilities applicationDocumentsDirectory],
+//                                      btn.imageId];
+//                UIImage *tempImage = [UIImage imageWithContentsOfFile:filePath];
+//                if (tempImage) {
+//                    [btn setImage:tempImage forState:UIControlStateNormal];
+//                }
+//                
+//            }
+//        }
+//        
+//    }
+
 }
 - (void)viewDidLoad
 {

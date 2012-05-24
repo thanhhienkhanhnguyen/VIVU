@@ -74,12 +74,14 @@
 @property (nonatomic, retain) PhotosViewController *photosViewControllerMainView;
 @property (nonatomic, assign) CGRect currentFramePopOver;
 @property (nonatomic, retain) DetailVenueViewControllerIpad *tempDetailVenueViewController;
+@property (nonatomic, retain) ShowAllPlaceViewController_Ipad *tempShowPlaceInTableViewController;
+@property (nonatomic, assign) CGFloat oldRadian;
+@property (nonatomic, retain) IBOutlet UIView *panelView;
 
 
 
 
 
--(void) setRegion:(CLLocation *)coordinate2D;
 -(IBAction)customeViewMapView:(id)sender;
 -(void) setRegion:(CLLocation *)coordinate2D;
 -(IBAction)UpdateRegionbtn:(id)sender;
