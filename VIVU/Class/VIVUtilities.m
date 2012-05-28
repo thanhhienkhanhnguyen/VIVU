@@ -9,6 +9,7 @@
 #import "VIVUtilities.h"
 #import "ImagesProfileProvider.h"
 #import "ViewController.h"
+#import "AppDelegate.h"
 
 
 
@@ -22,6 +23,12 @@
     [arrayProvider release];
     [arrayImages release];
     [super dealloc];
+
+}
+
++(UIViewController *)getRootViewController
+{
+    return  ((AppDelegate*)[UIApplication sharedApplication].delegate).viewController;
 }
 +(void)stopArrayProvider:(NSMutableArray*)arrProvider
 {

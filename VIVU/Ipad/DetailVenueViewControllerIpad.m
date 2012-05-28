@@ -10,7 +10,11 @@
 #import "VIVUtilities.h"
 
 @interface DetailVenueViewControllerIpad ()
+{
+    BOOL hasTips;
+    BOOL hasPhotos;
 
+}
 @end
 
 @implementation DetailVenueViewControllerIpad
@@ -28,10 +32,12 @@
 @synthesize arraySubPhotos;
 @synthesize arraySubProvider;
 @synthesize delegate;
+@synthesize requestDetailPlace;
 
 
 -(void)dealloc
 {
+    [requestDetailPlace release];
     delegate =nil;
     [arraySubPhotos release];
     [arraySubProvider release];
@@ -51,7 +57,7 @@
 //    CGFloat h = count * tableView.rowHeight;
 //    h += 44; //for navigation bar
     
-    return CGSizeMake(330, 330);
+    return CGSizeMake(330, 330-44);
 }
 -(void)configureView
 {
@@ -128,6 +134,8 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    hasTips = NO;
+    hasPhotos = NO;
 }
 
 - (void)viewDidUnload
@@ -139,7 +147,14 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self setContentSizeForViewInPopover:CGSizeMake(330, 330)];
+    [self setContentSizeForViewInPopover:CGSizeMake(330, 330-44)];
+    if (!requestDetailPlace) {
+        requestDetailPlace = [[DetailPlaceProvider alloc]init];
+        requestDetailPlace.delegateDetail =self;
+    }
+    //    [self startSpinner:self.view];
+    [requestDetailPlace configURLByItemId:[dictInfo objectForKey:@"id"]];
+    [requestDetailPlace requestData];
 }
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
@@ -207,6 +222,7 @@
                 }else {
                     cell.imageView.image = image;
                 }
+                cell.accessoryType = UITableViewCellAccessoryNone;
 
             }else {
                 //address
@@ -216,13 +232,27 @@
                     address =@"";
                 }
                 cell.detailTextLabel.text = address;
+                cell.accessoryType = UITableViewCellAccessoryNone;
             }
             
         }else if (indexPath.section ==1) {
             //photos
             cell.textLabel.text = @"Photos";
+            if (hasPhotos) {
+            
+        
+                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            }else {
+                cell.accessoryType = UITableViewCellAccessoryNone;
+            }
+            
         }else if (indexPath.section==2) {
             cell.textLabel.text =@"Tips";
+            if (hasTips) {
+                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            }else {
+                 cell.accessoryType = UITableViewCellAccessoryNone;
+            }
         }
     }
         
@@ -232,39 +262,75 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section ==1) {
-        if (!requestMorePhoto) {
-            requestMorePhoto = [[MorePhotosProvider alloc]init];
-            requestMorePhoto.delegateMorePhotos = self;
+        if (hasPhotos) {
+            if (!requestMorePhoto) {
+                requestMorePhoto = [[MorePhotosProvider alloc]init];
+                requestMorePhoto.delegateMorePhotos = self;
+            }
+            if (!photosViewController) {
+                photosViewController = [[PhotosViewController alloc]initWithNibName:@"PhotosViewControllerIpad" bundle:nil];
+                photosViewController.delegate = self;
+                photosViewController.delegatePhotosView = self;
+            }
+            photosViewController.isBelongToPopOver = YES;
+            [self.navigationController pushViewController:photosViewController animated:YES];
+            [requestMorePhoto configURLByVenueID:[dictInfo objectForKey:@"id"]];
+            [requestMorePhoto requestData];
+
+
         }
-        if (!photosViewController) {
-            photosViewController = [[PhotosViewController alloc]initWithNibName:@"PhotosViewControllerIpad" bundle:nil];
-            photosViewController.delegate = self;
-            photosViewController.delegatePhotosView = self;
-        }
-        photosViewController.isBelongToPopOver = YES;
-        [self.navigationController pushViewController:photosViewController animated:YES];
-        [requestMorePhoto configURLByVenueID:[dictInfo objectForKey:@"id"]];
-        [requestMorePhoto requestData];
-       
+              
         
 
     }else if (indexPath.section==2) {
         //Tips
-        if (!tableViewTips) {
-            tableViewTips = [[tableViewTipsControllerViewController alloc]initWithNibName:@"tableViewTipsViewControllerIpad" bundle:nil];
-            tableViewTips.delegate =self;
+        if (hasTips) {
+            if (!tableViewTips) {
+                tableViewTips = [[tableViewTipsControllerViewController alloc]initWithNibName:@"tableViewTipsViewControllerIpad" bundle:nil];
+                tableViewTips.delegate =self;
+            }
+            if (!requestMoreTips) {
+                requestMoreTips = [[MoreTisProvider alloc]init];
+                requestMoreTips.delegateMoreTips  = self;
+            }
+            tableViewTips.isBelongToPopOver = YES;
+            [self.navigationController pushViewController:tableViewTips animated:YES];
+            [requestMoreTips configURLByVenueID:[dictInfo objectForKey:@"id"]];
+            [requestMoreTips requestData];
+
         }
-        if (!requestMoreTips) {
-            requestMoreTips = [[MoreTisProvider alloc]init];
-            requestMoreTips.delegateMoreTips  = self;
-        }
-        tableViewTips.isBelongToPopOver = YES;
-        [self.navigationController pushViewController:tableViewTips animated:YES];
-        [requestMoreTips configURLByVenueID:[dictInfo objectForKey:@"id"]];
-        [requestMoreTips requestData];
     }
 }
+#pragma mark DetailPlace Delegate
+-(void)DetailPlaceDidFinishParsing:(DetailPlaceProvider *)provider
+{
+    if (provider.resultContent) {
+        NSDictionary *dictDetail = [provider.resultContent objectAtIndex:0];
+        NSMutableArray *arrayTips = [dictDetail objectForKey:@"tips"];
+        NSMutableArray *arrPhotos = [dictDetail objectForKey:@"photos"];
+        if (arrayTips) {
+            if ([arrayTips count]>0) {
+                hasTips = YES;
+            }
+        }
+        if (arrPhotos) {
+            if ([arrPhotos count]>0) {
+                hasPhotos = YES;
+            }
+        }
+        [self.tableView reloadData];
+    }
+}
+
 #pragma mark TableViewTips Delegate
+-(void)loadDetailPhotosFromTips:(PhotosScrollViewController *)photosScrollView
+{
+    [self.delegate loadDetailPhotoFromPopOver:photosScrollView];
+}
+-(void)rePresentPopOverFromTips
+{
+    [self.delegate rePresentPopOVerFromDetailVenue];
+}
 -(void) backToDetaiVenueViewController
 {
     if (self.tableViewTips) {
@@ -306,6 +372,17 @@
             imageProvider.categoryName = [userTip objectForKey:@"id"];
             [arrayProvider addObject:imageProvider];
             [imageProvider release];
+            NSString *url = [dictTip objectForKey:@"url"];
+            if (url) {
+                ImagesProfileProvider *imageProvider =[[ImagesProfileProvider alloc]init];
+                [imageProvider configURLByURL:url];
+                imageProvider.ImagesProfileDelegate =self;
+                imageProvider.mode = ProviderModeImage;
+                imageProvider.categoryName = [dictTip objectForKey:@"idPhoto"];
+                [arrayProvider addObject:imageProvider];
+                [imageProvider release];
+            }
+            
         }
         self.counter =0;
         [self loadOneByOneImage];
@@ -423,10 +500,11 @@
                          [photosViewController reloadPhotoById:provider.categoryName];
                     }
                     if (tableViewTips) {
-                        for (int i =0; i <[arrayProvider count]; i++) {
-                            ImagesProfileProvider *imageProvider = [arrayProvider objectAtIndex:i];
-                            if ([imageProvider.categoryName isEqual:provider.categoryName]) {           
-                                
+                        for (int i =0; i <[tableViewTips.arrayTips count]; i++) {
+                            NSDictionary *dictTip = [tableViewTips.arrayTips objectAtIndex:i];
+                            NSDictionary *userTip =[dictTip objectForKey:@"userTip"];
+                            if ([[userTip objectForKey:@"id"] isEqual:provider.categoryName]) {           
+//                                [tableViewTips.tableView reloadData];
                                 NSIndexPath *index =  [NSIndexPath indexPathForRow:i inSection:0];
                                 
                                 NSArray *array = [NSArray arrayWithObject:index];

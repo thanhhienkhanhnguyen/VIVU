@@ -50,14 +50,24 @@
             NSString * idTip  = [dictTip objectForKey:@"id"];
             NSString *date = [dictTip objectForKey:@"createdAt"];
             NSString *text = [dictTip objectForKey:@"text"];
-            NSString *url = [dictTip objectForKey:@"photourl"];
+            NSDictionary *dictPhotos = [dictTip objectForKey:@"photo"];
+            NSString *url = [dictPhotos objectForKey:@"url"];
+            NSString *idPhoto = [dictPhotos objectForKey:@"id"];
+            if ([url rangeOfString:@"jpg"].length>0) {
+                url= [url stringByReplacingOccurrencesOfString:@".jpg" withString:@"_100x100.jpg"];
+            }
+            
+            if ([url rangeOfString:@"pix"].length>0) {
+                url =[url stringByReplacingOccurrencesOfString:@"pix" withString:@"derived_pix"];
+            }  
             NSDictionary *dictUser = [dictTip objectForKey:@"user"];
             NSDictionary *dictTipItem = [NSDictionary dictionaryWithObjectsAndKeys:
                                          dictUser,@"userTip",
                                          idTip,@"idTip",
                                          date, @"date",
                                          text,@"text",
-                                         url,@"url",         
+                                         url,@"url",
+                                         idPhoto,@"idPhoto",
                                          nil];
             [self.resultContent addObject:dictTipItem];
         }

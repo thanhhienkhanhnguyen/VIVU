@@ -18,8 +18,10 @@
 @synthesize arrayTips;
 @synthesize isBelongToPopOver;
 @synthesize delegate;
+@synthesize photosViewController;
 -(void)dealloc
 {
+    [photosViewController release];
     delegate = nil;
     [tableView release];
     [arrayTips release];
@@ -41,7 +43,7 @@
 {
     [super viewWillAppear:animated];
     if (isBelongToPopOver) {
-        [self setContentSizeForViewInPopover:CGSizeMake(330, 330)];
+        [self setContentSizeForViewInPopover:CGSizeMake(330, 330-44)];
     }
 }
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -57,7 +59,49 @@
 }
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSDictionary *dictTip = [arrayTips objectAtIndex:indexPath.row];
+    NSString *url = [dictTip objectForKey:@"url"];
+    NSString *idPhoto = [dictTip objectForKey:@"idPhoto"];
+    NSDictionary *dictImage = [NSDictionary dictionaryWithObjectsAndKeys:
+                               url,@"url",
+                               idPhoto,@"id",
+                               nil];
     
+    if (url) {
+        if (!photosViewController) {
+            photosViewController = [[PhotosViewController alloc]initWithNibName:@"PhotosViewController" bundle:nil];
+            photosViewController.delegate = self;
+//            photosViewController.delegatePhotosView = self;
+            photosViewController.isBelongToPopOver = YES;
+        }
+        NSMutableArray *arrayPhotos = [NSMutableArray arrayWithObject:dictImage];
+        photosViewController.arrayPhotos = arrayPhotos;
+        if (photosViewController) {
+            if ([VIVUtilities isIpadDevice]) {
+                [self.navigationController pushViewController:photosViewController animated:YES];
+                [photosViewController createBasicViewPhotos];
+            }else {
+                
+            }
+           
+        }
+        
+    }
+    
+}
+-(void)loadDetailPhotos:(PhotosScrollViewController *)photosScrollView
+{
+    if ([VIVUtilities isIpadDevice]) {
+        [self.delegate loadDetailPhotosFromTips:photosScrollView];
+    }
+}
+-(void)rePresentPopOverFromPhotosViewController
+{
+    [self.delegate rePresentPopOverFromTips];
+}
+-(void)backToDetailVenueViewControllerFromPhotosView
+{
+    NSLog(@"AAAAAAA");
 }
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -107,6 +151,17 @@
     dateTime =[NSString stringWithFormat:@"added %@ by %@%@",dateTime,first,last];
     cell.detailTextLabel.font =[UIFont systemFontOfSize:12];
     cell.detailTextLabel.text = dateTime;
+    
+    NSString *url = [dictTip objectForKey:@"url"];
+    if (url) {
+        if ([[dictTip objectForKey:@"text"] hasPrefix:@"Gre"]) {
+            NSLog(@"%@",url);
+        }
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    }else {
+        cell.accessoryType = UITableViewCellAccessoryNone;
+    }
+    
     return cell;
 }
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil

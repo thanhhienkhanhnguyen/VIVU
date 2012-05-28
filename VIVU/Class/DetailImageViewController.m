@@ -33,13 +33,18 @@
 @synthesize currentUrl;
 -(void)dealloc
 {
+//    NSLog(@"image deadloc:%i",self.view.subviews.count);
+    for (UIView *sv in self.view.subviews) {
+//        NSLog(@"sv class %@ %i",NSStringFromClass([sv class]), sv.retainCount);
+        [sv removeFromSuperview];
+    }
     [currentUrl release];
-    [spiner release];
     [currentImageId release];
     [gestureLeft release];
     [gestureRight release];
     [requestBigImage release];
-    [delegate release];
+    delegate =nil;
+    [imageView removeFromSuperview];
     [imageView release];
     [super dealloc];
 }
@@ -53,19 +58,20 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
-        self.gestureLeft = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(nextImage:)];
-        gestureLeft.direction = UISwipeGestureRecognizerDirectionLeft;
-//        [self.view addGestureRecognizer:gestureLeft];
-        self.gestureRight =[[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(preImage:)];
-        gestureRight.direction = UISwipeGestureRecognizerDirectionRight;
-//        [self.view addGestureRecognizer:gestureRight];
-        self.spiner =[[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+//        self.gestureLeft = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(nextImage:)];
+//        gestureLeft.direction = UISwipeGestureRecognizerDirectionLeft;
+////        [self.view addGestureRecognizer:gestureLeft];
+//        self.gestureRight =[[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(preImage:)];
+//        gestureRight.direction = UISwipeGestureRecognizerDirectionRight;
+////        [self.view addGestureRecognizer:gestureRight];
+        spiner =[[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
 //        [spiner setCenter:self.view.center];
         CGRect frame = self.view.frame;
         CGPoint point =CGPointMake(frame.size.width/2, frame.size.height/2);
         [spiner setCenter:point];
         [spiner startAnimating];
         [self.view addSubview:spiner];
+        [spiner release];
 
         
     

@@ -13,6 +13,7 @@
 #import "CustomeButton.h"
 #import "VIVUtilities.h"
 #import "DetailImageViewController.h"
+#import "ViewController.h"
 
 @interface PhotosScrollViewController ()
 
@@ -27,8 +28,25 @@
 @synthesize currentPhotoId;
 @synthesize arrayDetailView;
 @synthesize currentIndex;
+
+- (oneway void)release
+{
+//    NSLog(@"PhotosScrollViewController release:%i",self.retainCount);
+    return [super release];
+}
+
+- (id)retain
+{
+//    NSLog(@"PhotosScrollViewController retain:%i",self.retainCount);
+    return [super retain];
+}
 -(void)dealloc
 {
+//    NSLog(@"PhotosScrollViewController dealloc:%i",scrollView.subviews.count);
+    for (UIView *sv in scrollView.subviews) {
+        
+//        NSLog(@"sv class:%@ ---- sv:%i",NSStringFromClass([sv class]),sv.retainCount);
+    }
     [arrayDetailView release];
     delegate = nil;
     [currentPhotoId release];
@@ -53,13 +71,15 @@
     [super loadView];
     self.arrayDetailView =[NSMutableArray array];
     self.view.backgroundColor = [UIColor blackColor];
-    self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
+    //MEMORY LEAK
+    scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height)];
     [scrollView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-    self.scrollView.delegate =self;
+    scrollView.delegate =self;
     scrollView.pagingEnabled = YES;
     scrollView.showsHorizontalScrollIndicator = NO;
     CGFloat w =0;
     CGFloat h =0;
+//    NSLog(@"TEST loadView:%i",scrollView.subviews.count);
     for (int i = 0; i < [arrayPhotos count]; i++) {
 //        CGFloat yOrigin = i * self.view.frame.size.width;
         NSDictionary *dictImage= [arrayPhotos objectAtIndex:i];
@@ -71,9 +91,10 @@
         }else {
             imageViewDetail = [[DetailImageViewController alloc]initWithNibName:@"DetailImagesViewControllerIpad" bundle:nil];
         }
-//        [imageViewDetail.view setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleBottomMargin];
+//        NSLog(@"imageViewDetail.view.retainCount1:%i",imageViewDetail.view.retainCount);
         imageViewDetail.delegate =self;
         [arrayDetailView addObject:imageViewDetail];
+//        NSLog(@"imageViewDetail.view.retainCount2:%i",imageViewDetail.view.retainCount);
         CGRect frame = imageViewDetail.view.frame;
 //        frame.origin.x = yOrigin;
         frame.origin.x = i*[VIVUtilities getSizeDevice].width;
@@ -81,13 +102,16 @@
         w += frame.size.width;
         h = frame.size.height;
         [imageViewDetail.view setFrame:frame];
+//        NSLog(@"imageViewDetail.view.retainCount3:%i",imageViewDetail.view.retainCount);
         imageViewDetail.currentImageId = imageID;
         imageViewDetail.currentUrl = url;
         NSInteger tag = i +2013;
         [imageViewDetail.view setTag:tag];
-
+//        NSLog(@"scrollView addSubview:imageViewDetail.view1:%i====%i", imageViewDetail.view.retainCount, imageViewDetail.retainCount);
         [scrollView addSubview:imageViewDetail.view];
+//        NSLog(@"scrollView addSubview:imageViewDetail.view2:%i====%i", imageViewDetail.view.retainCount, imageViewDetail.retainCount);
         [imageViewDetail release];
+//        NSLog(@"scrollView addSubview:imageViewDetail.view3:%i====%i", imageViewDetail.view.retainCount, imageViewDetail.retainCount);
         
     }
 //    if ([VIVUtilities isIpadDevice]) {
@@ -111,6 +135,10 @@
             [self loadPreNextImage:imageID];
         }
     }
+//    for (UIView *sv in scrollView.subviews) {
+//        
+//        NSLog(@"sv class:%@ ---- sv:%i",NSStringFromClass([sv class]),sv.retainCount);
+//    }
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView12
@@ -182,8 +210,22 @@
 //    if ([VIVUtilities isIpadDevice]) {
 //        [self.delegate  rePresentPopOver];
 //    }  
-    
+//    NSLog(@"start closeView");
+    for (int i =0; i< [arrayDetailView count]; i++) {
+        DetailImageViewController *imageViewController = [arrayDetailView objectAtIndex:(i)];
+        if (imageViewController.requestBigImage.loadingData==YES) {
+            [imageViewController.requestBigImage cancelDownloadProvider];
+        }
+        if (imageViewController.view.superview == scrollView) {
+//            NSLog(@"MI TOM:%i",imageViewController.view.retainCount);
+            [imageViewController.view removeFromSuperview];
+        }
+        
+    }
+
+//    NSLog(@"closeView middle");
     if ([VIVUtilities isIpadDevice]) {
+//       [self dismissViewControllerAnimated:YES completion:nil];
         [self dismissViewControllerAnimated:YES completion:^{
             if ([VIVUtilities isIpadDevice]) {
                 [self.delegate  rePresentPopOver];
@@ -214,7 +256,18 @@
     }
     return self;
 }
-
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+//     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(rotatePhotosScrollView) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+}
+-(void)viewDidDisappear:(BOOL)animated
+{
+    [super viewDidDisappear:animated];
+//    [[NSNotificationCenter defaultCenter]removeObserver:self];
+    
+    
+}
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -222,6 +275,8 @@
 //    [self.scrollView setBackgroundColor:[UIColor yellowColor]];
 //    [self.view setAutoresizingMask:UIViewAutoresizingNone];
     self.scrollView.pagingEnabled = YES;
+//    self addObserver:<#(NSObject *)#> forKeyPath:<#(NSString *)#> options:<#(NSKeyValueObservingOptions)#> context:<#(void *)#>
+//    [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(rotatePhotosScrollView) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
 
     
 }
@@ -237,6 +292,37 @@
 {
 //    return (interfaceOrientation == UIInterfaceOrientationPortrait);
     return YES;
+}
+-(void) rotatePhotosScrollView
+{
+    CGPoint point = scrollView.contentOffset;
+    NSInteger index = (int)(point.x /[VIVUtilities getSizeDevice].width);
+    currentIndex = index;
+    CGFloat w =0;
+    CGFloat h =0;
+    for (int i =0; i< [arrayDetailView count]; i++) {
+        DetailImageViewController *imageViewController = [arrayDetailView objectAtIndex:(i)];
+        
+        
+        CGRect frame = imageViewController.view.frame;
+        frame.size =[VIVUtilities getSizeDevice];
+        w += frame.size.width;
+        h  =frame.size.height;
+        frame.origin.x = i*frame.size.width;
+        [imageViewController.view setFrame:frame];
+        CGRect frameSpin = imageViewController.spiner.frame;
+        frameSpin.origin.x = imageViewController.view.frame.size.width/2-frameSpin.size.width/2;
+        frameSpin.origin.y  = imageViewController.view.frame.size.height/2-frameSpin.size.height/2;
+        //        NSLog(@"imageViewController %@",NSStringFromCGRect(imageViewController.view.frame));
+        //        NSLog(@"imageViewController.spiner %@",NSStringFromCGRect(imageViewController.spiner.frame));
+        [imageViewController.spiner setFrame:frameSpin];
+        
+        
+    }
+    
+    [scrollView setContentSize:CGSizeMake(w, h)];
+    CGPoint point12 = CGPointMake(((currentIndex)*[VIVUtilities getSizeDevice].width), 0);
+    [scrollView setContentOffset:point12];
 }
 -(void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {

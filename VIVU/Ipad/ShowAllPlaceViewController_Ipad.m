@@ -45,12 +45,12 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self setContentSizeForViewInPopover:CGSizeMake(330, 286)];
+    [self setContentSizeForViewInPopover:CGSizeMake(330, 330-44)];
     
     CGRect frame = self.view.bounds;
     frame.size = [self sizeInPopoverView];
-    if ([dataSourceTableView count]>6) {
-        frame.size.height = [self sizeInPopoverView].height -44;
+    if ([dataSourceTableView count]>7) {
+        frame.size.height = [self sizeInPopoverView].height;
     }else {
         frame.size.height = [dataSourceTableView count]*44;
     }
@@ -70,7 +70,7 @@
 -(CGSize)sizeInPopoverView
 {
    
-    return CGSizeMake(330, 330);
+    return CGSizeMake(330, 330-44);
 }
 #pragma table Delegate
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -190,6 +190,7 @@
         detailVenueViewController.delegate = self;
         detailVenueViewController.dictInfo = dictInfo;
         [self.navigationController pushViewController:detailVenueViewController animated:YES];
+        [detailViewController release];
     }
     
 }

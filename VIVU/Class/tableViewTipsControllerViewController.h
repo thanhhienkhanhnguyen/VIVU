@@ -7,14 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PhotosViewController.h"
+#import "PhotosScrollViewController.h"
 
 @protocol TableViewTipsDelegate <NSObject>
 
 -(void)backToDetaiVenueViewController;
+@optional
+-(void) loadDetailPhotosFromTips:(PhotosScrollViewController *)photosScrollView;
+-(void) rePresentPopOverFromTips;
 
 @end
 
-@interface tableViewTipsControllerViewController : UIViewController<UITableViewDataSource,UITableViewDelegate>
+@interface tableViewTipsControllerViewController : UIViewController<UITableViewDataSource,UITableViewDelegate,PhotosViewControllerDelegate>
 
 
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
@@ -22,4 +27,5 @@
 
 @property (nonatomic, assign) BOOL isBelongToPopOver;
 @property (nonatomic, assign) id<TableViewTipsDelegate> delegate;
+@property (nonatomic, retain) PhotosViewController *photosViewController;
 @end

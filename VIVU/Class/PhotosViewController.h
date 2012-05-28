@@ -12,10 +12,16 @@
 @protocol PhotosViewControllerDelegate <NSObject>
 
 -(void) loadDetailPhotos:(PhotosScrollViewController *)photosScrollView;
--(void) closeMorePhoto;
+
+
+
+
+@optional
 -(void) backToDetailVenueViewControllerFromPhotosView;
+-(void) closeMorePhoto;
 -(void) requestMoreProviderWithSubArrayPhotos:(NSMutableArray *)subArrayPhotos;
 -(void) rePresentPopOverFromPhotosViewController;
+
 
 
 @end
@@ -41,4 +47,5 @@
 -(void) createSubPhotosWithIndex:(NSInteger)page;
 -(void) createBasicViewPhotosForPopOver:(NSInteger)page;
 -(void) clearAllImageInView;
+
 @end

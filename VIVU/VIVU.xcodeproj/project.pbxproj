@@ -63,6 +63,12 @@
 		8E82048E156114DC00E82954 /* SearchVenueViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8E82048C156114DB00E82954 /* SearchVenueViewController.xib */; };
 		8E82049215611A7900E82954 /* DetailVenueViewControllerIpad.m in Sources */ = {isa = PBXBuildFile; fileRef = 8E82049015611A7700E82954 /* DetailVenueViewControllerIpad.m */; };
 		8E82049515611D1100E82954 /* DetailVenueViewControllerIpad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8E82049415611D1100E82954 /* DetailVenueViewControllerIpad.xib */; };
+		8E86012C156E37CB0065338C /* libGoogleAdMobAds.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E860123156E37CB0065338C /* libGoogleAdMobAds.a */; };
+		8E86012D156E37CB0065338C /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = 8E86012B156E37CB0065338C /* README.txt */; };
+		8E860130156E39900065338C /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E86012F156E39900065338C /* MediaPlayer.framework */; };
+		8E860132156E39990065338C /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E860131156E39990065338C /* MessageUI.framework */; };
+		8E860134156E39A30065338C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E860133156E39A30065338C /* SystemConfiguration.framework */; };
+		8E860136156E3A710065338C /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E860135156E3A710065338C /* AudioToolbox.framework */; };
 		8E8F72CD1558FB9800574BFF /* btnChangeTypeIpad.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E8F72C31558FB9800574BFF /* btnChangeTypeIpad.png */; };
 		8E8F72CE1558FB9800574BFF /* btnChangeTypeIpad_selected.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E8F72C41558FB9800574BFF /* btnChangeTypeIpad_selected.png */; };
 		8E8F72CF1558FB9800574BFF /* btnLockCompassIpad.png in Resources */ = {isa = PBXBuildFile; fileRef = 8E8F72C51558FB9800574BFF /* btnLockCompassIpad.png */; };
@@ -211,6 +217,27 @@
 		8E82048F15611A7700E82954 /* DetailVenueViewControllerIpad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailVenueViewControllerIpad.h; sourceTree = "<group>"; };
 		8E82049015611A7700E82954 /* DetailVenueViewControllerIpad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailVenueViewControllerIpad.m; sourceTree = "<group>"; };
 		8E82049415611D1100E82954 /* DetailVenueViewControllerIpad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailVenueViewControllerIpad.xib; sourceTree = "<group>"; };
+		8E86011A156E37CB0065338C /* GADAdMobExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADAdMobExtras.h; sourceTree = "<group>"; };
+		8E86011B156E37CB0065338C /* GADAdNetworkExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADAdNetworkExtras.h; sourceTree = "<group>"; };
+		8E86011C156E37CB0065338C /* GADAdSize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADAdSize.h; sourceTree = "<group>"; };
+		8E86011D156E37CB0065338C /* GADBannerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADBannerView.h; sourceTree = "<group>"; };
+		8E86011E156E37CB0065338C /* GADBannerViewDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADBannerViewDelegate.h; sourceTree = "<group>"; };
+		8E86011F156E37CB0065338C /* GADInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADInterstitial.h; sourceTree = "<group>"; };
+		8E860120156E37CB0065338C /* GADInterstitialDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADInterstitialDelegate.h; sourceTree = "<group>"; };
+		8E860121156E37CB0065338C /* GADRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADRequest.h; sourceTree = "<group>"; };
+		8E860122156E37CB0065338C /* GADRequestError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADRequestError.h; sourceTree = "<group>"; };
+		8E860123156E37CB0065338C /* libGoogleAdMobAds.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGoogleAdMobAds.a; sourceTree = "<group>"; };
+		8E860125156E37CB0065338C /* GADCustomEventBanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADCustomEventBanner.h; sourceTree = "<group>"; };
+		8E860126156E37CB0065338C /* GADCustomEventBannerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADCustomEventBannerDelegate.h; sourceTree = "<group>"; };
+		8E860127156E37CB0065338C /* GADCustomEventExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADCustomEventExtras.h; sourceTree = "<group>"; };
+		8E860128156E37CB0065338C /* GADCustomEventInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADCustomEventInterstitial.h; sourceTree = "<group>"; };
+		8E860129156E37CB0065338C /* GADCustomEventInterstitialDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADCustomEventInterstitialDelegate.h; sourceTree = "<group>"; };
+		8E86012A156E37CB0065338C /* GADCustomEventRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADCustomEventRequest.h; sourceTree = "<group>"; };
+		8E86012B156E37CB0065338C /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
+		8E86012F156E39900065338C /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		8E860131156E39990065338C /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
+		8E860133156E39A30065338C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		8E860135156E3A710065338C /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		8E8F72C31558FB9800574BFF /* btnChangeTypeIpad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = btnChangeTypeIpad.png; sourceTree = "<group>"; };
 		8E8F72C41558FB9800574BFF /* btnChangeTypeIpad_selected.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = btnChangeTypeIpad_selected.png; sourceTree = "<group>"; };
 		8E8F72C51558FB9800574BFF /* btnLockCompassIpad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = btnLockCompassIpad.png; sourceTree = "<group>"; };
@@ -292,6 +319,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8E860136156E3A710065338C /* AudioToolbox.framework in Frameworks */,
+				8E860134156E39A30065338C /* SystemConfiguration.framework in Frameworks */,
+				8E860132156E39990065338C /* MessageUI.framework in Frameworks */,
+				8E860130156E39900065338C /* MediaPlayer.framework in Frameworks */,
 				8E6A4B1015450444005FB1F7 /* CoreLocation.framework in Frameworks */,
 				8E6A4B0E15450431005FB1F7 /* QuartzCore.framework in Frameworks */,
 				8E6A4B0C15450424005FB1F7 /* MapKit.framework in Frameworks */,
@@ -300,6 +331,7 @@
 				8E6A4AEA15450336005FB1F7 /* CoreGraphics.framework in Frameworks */,
 				8E94DA33155B7FC700AD2560 /* libFlurryAnalytics.a in Frameworks */,
 				8E94DA34155B7FC700AD2560 /* libFlurryAppCircle.a in Frameworks */,
+				8E86012C156E37CB0065338C /* libGoogleAdMobAds.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -323,6 +355,7 @@
 		8E6A4AD615450336005FB1F7 = {
 			isa = PBXGroup;
 			children = (
+				8E860119156E37CB0065338C /* GoogleAdMobAdsSDK */,
 				8E8F72B71558D99E00574BFF /* Ipad */,
 				8E6A4B3615450CA1005FB1F7 /* Class */,
 				8E6A4B2C15450C4B005FB1F7 /* Parser */,
@@ -346,6 +379,10 @@
 		8E6A4AE415450336005FB1F7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8E860135156E3A710065338C /* AudioToolbox.framework */,
+				8E860133156E39A30065338C /* SystemConfiguration.framework */,
+				8E860131156E39990065338C /* MessageUI.framework */,
+				8E86012F156E39900065338C /* MediaPlayer.framework */,
 				8E6A4B0F15450444005FB1F7 /* CoreLocation.framework */,
 				8E6A4B0D15450431005FB1F7 /* QuartzCore.framework */,
 				8E6A4B0B15450424005FB1F7 /* MapKit.framework */,
@@ -500,6 +537,38 @@
 			);
 			name = GroupAnnotation;
 			path = VIVU/GroupAnnotation;
+			sourceTree = "<group>";
+		};
+		8E860119156E37CB0065338C /* GoogleAdMobAdsSDK */ = {
+			isa = PBXGroup;
+			children = (
+				8E86011A156E37CB0065338C /* GADAdMobExtras.h */,
+				8E86011B156E37CB0065338C /* GADAdNetworkExtras.h */,
+				8E86011C156E37CB0065338C /* GADAdSize.h */,
+				8E86011D156E37CB0065338C /* GADBannerView.h */,
+				8E86011E156E37CB0065338C /* GADBannerViewDelegate.h */,
+				8E86011F156E37CB0065338C /* GADInterstitial.h */,
+				8E860120156E37CB0065338C /* GADInterstitialDelegate.h */,
+				8E860121156E37CB0065338C /* GADRequest.h */,
+				8E860122156E37CB0065338C /* GADRequestError.h */,
+				8E860123156E37CB0065338C /* libGoogleAdMobAds.a */,
+				8E860124156E37CB0065338C /* Mediation */,
+				8E86012B156E37CB0065338C /* README.txt */,
+			);
+			path = GoogleAdMobAdsSDK;
+			sourceTree = "<group>";
+		};
+		8E860124156E37CB0065338C /* Mediation */ = {
+			isa = PBXGroup;
+			children = (
+				8E860125156E37CB0065338C /* GADCustomEventBanner.h */,
+				8E860126156E37CB0065338C /* GADCustomEventBannerDelegate.h */,
+				8E860127156E37CB0065338C /* GADCustomEventExtras.h */,
+				8E860128156E37CB0065338C /* GADCustomEventInterstitial.h */,
+				8E860129156E37CB0065338C /* GADCustomEventInterstitialDelegate.h */,
+				8E86012A156E37CB0065338C /* GADCustomEventRequest.h */,
+			);
+			path = Mediation;
 			sourceTree = "<group>";
 		};
 		8E8F72B71558D99E00574BFF /* Ipad */ = {
@@ -740,6 +809,7 @@
 				8E4303D1156607530045CDE7 /* info_screen.png in Resources */,
 				8E4303D415665D580045CDE7 /* annotationdefault.png in Resources */,
 				8EBFF30F156B8CE500AAA8FA /* more_photo_02.png in Resources */,
+				8E86012D156E37CB0065338C /* README.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -894,6 +964,7 @@
 					"\"$(SRCROOT)/Class/Custom/FlurryLib\"",
 					"\"$(SRCROOT)/Class/Custom/FlurryAnalytics\"",
 					"\"$(SRCROOT)/Class/Custom/FlurryAppCircle\"",
+					"\"$(SRCROOT)/GoogleAdMobAdsSDK\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "82A07F6E-2AAE-46BD-8086-D1EB07DB05CF";
@@ -925,6 +996,7 @@
 					"\"$(SRCROOT)/Class/Custom/FlurryLib\"",
 					"\"$(SRCROOT)/Class/Custom/FlurryAnalytics\"",
 					"\"$(SRCROOT)/Class/Custom/FlurryAppCircle\"",
+					"\"$(SRCROOT)/GoogleAdMobAdsSDK\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "34150AB4-915C-4560-B79A-D4A994A2EC4C";

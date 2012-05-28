@@ -28,5 +28,5 @@
 +(CGSize)getSizeDevice;
 +(void) closeRequestImageProviderWithArrayProvider:(NSMutableArray *)arrayProvider;
 +(UIImage *)scaleImage:(UIImage *)image withSize:(CGSize)size;
-
++(UIViewController *)getRootViewController;
 @end

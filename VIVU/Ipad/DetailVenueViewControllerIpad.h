@@ -12,6 +12,7 @@
 #import "ImagesProfileProvider.h"
 #import "MoreTisProvider.h"
 #import "tableViewTipsControllerViewController.h"
+#import "DetailPlaceProvider.h"
 
 @protocol DetailVenueViewControllerDelegate <NSObject>
 
@@ -20,13 +21,14 @@
 
 @end
 
-@interface DetailVenueViewControllerIpad : UIViewController<UITableViewDelegate,UITableViewDataSource,MorePhotosDelegate,PhotosViewControllerDelegate,ImagesProfileProviderDelegate,MoreTisProviderDelegate,TableViewTipsDelegate,CloseRequestFromSubview>
+@interface DetailVenueViewControllerIpad : UIViewController<UITableViewDelegate,UITableViewDataSource,MorePhotosDelegate,PhotosViewControllerDelegate,ImagesProfileProviderDelegate,MoreTisProviderDelegate,TableViewTipsDelegate,CloseRequestFromSubview,DetailPlaceDelegate>
 
 @property (nonatomic, retain) NSDictionary *dictInfo;
 @property (nonatomic, retain) IBOutlet UITableView *tableView;
 @property (nonatomic, retain) NSMutableArray *dataSourceTableView;
 @property (nonatomic, retain) MorePhotosProvider *requestMorePhoto;
 @property (nonatomic, retain) PhotosViewController *photosViewController;
+@property (nonatomic, retain) DetailPlaceProvider *requestDetailPlace;
 
 @property (nonatomic, retain) MoreTisProvider *requestMoreTips;
 @property (nonatomic, retain) tableViewTipsControllerViewController *tableViewTips;

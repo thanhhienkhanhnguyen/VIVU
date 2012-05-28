@@ -14,6 +14,7 @@
 #import "VIVUtilities.h"
 #import "CustomeButton.h"
 #include <QuartzCore/QuartzCore.h>
+#import "ViewController.h"
 
 @interface PhotosViewController ()
 {
@@ -114,7 +115,16 @@
     photosView.modalPresentationStyle = UIModalPresentationFullScreen;
     photosView.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
     if ([VIVUtilities isIpadDevice]) {
-        [self.delegate loadDetailPhotos:photosView];
+          [self.navigationController popToRootViewControllerAnimated:YES];
+//       [self presentViewController:photosView animated:YES completion:nil];
+//        NSLog(@"loadPhotosViewDetail1 %i",photosView.retainCount);
+//        [self.delegate loadDetailPhotos:photosView];
+        [((ViewController *)[VIVUtilities getRootViewController]) pushPhotosViewControllerFromMainView:photosView];
+//        NSLog(@"loadPhotosViewDetail2 %i",photosView.retainCount);
+        [photosView release];
+        photosView =nil;
+//         NSLog(@"loadPhotosViewDetail3 %i",photosView.retainCount);
+        
     }else {
         [self presentModalViewController:photosView animated:YES];
     }
@@ -123,7 +133,9 @@
 }
 -(void) rePresentPopOver
 {
+//    NSLog(@"start rePresentPopOver");
     [self.delegate rePresentPopOverFromPhotosViewController];
+//     NSLog(@"end rePresentPopOver");
 }
 -(void) createSubPhotosWithIndex:(NSInteger)page
 {
@@ -267,15 +279,17 @@
 -(void)createBasicViewPhotos
 {
     [self clearAllImageInView];
-    CGRect frame = CGRectMake(320-50, 0, 50, 50);
-    UIButton *btnCloseShowMorePhotos = [[UIButton alloc]initWithFrame:frame];
-    [btnCloseShowMorePhotos setTitle:@"Close" forState:UIControlStateNormal];
-    [btnCloseShowMorePhotos addTarget:self action:@selector(closeView:) forControlEvents:UIControlEventTouchUpInside];
-    [btnCloseShowMorePhotos setImage:[UIImage imageNamed:@"btnMinus.png"] forState:UIControlStateNormal];
-    [self.scrollView addSubview:btnCloseShowMorePhotos];
-    [btnCloseShowMorePhotos release];
-    
-    if ([arrayPhotos count]>4||([arrayPhotos count]<=4&& isBelongToPopOver)) {
+    if (!isBelongToPopOver) {
+        CGRect frame = CGRectMake(320-50, 0, 50, 50);
+        UIButton *btnCloseShowMorePhotos = [[UIButton alloc]initWithFrame:frame];
+        [btnCloseShowMorePhotos setTitle:@"Close" forState:UIControlStateNormal];
+        [btnCloseShowMorePhotos addTarget:self action:@selector(closeView:) forControlEvents:UIControlEventTouchUpInside];
+        [btnCloseShowMorePhotos setImage:[UIImage imageNamed:@"btnMinus.png"] forState:UIControlStateNormal];
+        [self.scrollView addSubview:btnCloseShowMorePhotos];
+        [btnCloseShowMorePhotos release];
+
+    }
+    if ([arrayPhotos count]>0||([arrayPhotos count]<=4&& isBelongToPopOver)) {
         //            NSLog(@"subImages :%d",[arrayPhotos count]);
         NSInteger row = (int)[arrayPhotos count]/4+1;
         CGRect frame = CGRectMake(0, 0, 0, 0);
@@ -294,7 +308,7 @@
                 NSString *filePath = [NSString stringWithFormat:@"%@/favicon/image/%@.jpg",
                                       [VIVUtilities applicationDocumentsDirectory],
                                       [dictImage objectForKey:@"id"]];
-                
+                NSLog(@"%@",[dictImage objectForKey:@"id"]);
                 UIImage *image = [UIImage imageWithContentsOfFile:filePath];
                 if (!image) {
                     image = [UIImage imageNamed:@"default_32.png"];
@@ -351,7 +365,8 @@
 {
     [super viewWillAppear:animated];
         if (isBelongToPopOver) {
-        [self setContentSizeForViewInPopover:CGSizeMake(330, 330)];
+        [self setContentSizeForViewInPopover:CGSizeMake(330, 330-44)];
+            self.btnClose.hidden = YES;
         if (isBelongToPopOver) {
             self.btnClose.hidden = YES;
         } 
@@ -394,7 +409,8 @@
 }
 -(void) backToParrentView:(id)sender
 {
-    [self.navigationController popToRootViewControllerAnimated:YES];
+//    [self.navigationController popToRootViewControllerAnimated:YES];
+    [self.navigationController popViewControllerAnimated:YES];
     [self.delegate backToDetailVenueViewControllerFromPhotosView];
 }
 - (void)viewDidUnload
@@ -406,8 +422,8 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
-//    return YES;
+//    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return YES;
 }
 
 @end

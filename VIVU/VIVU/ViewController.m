@@ -9,7 +9,7 @@
 
 #define MERCATOR_OFFSET 268435456
 #define MERCATOR_RADIUS 85445659.44705395
-
+#define AdMob_ID        @"a14fbef77ff0a14"
 #define GEORGIA_TECH_LATITUDE 33.777328
 #define GEORGIA_TECH_LONGITUDE -84.397348 
 
@@ -29,11 +29,14 @@
 #import "GroupAnnotation/SingleAnnotation.h"
 #import "ViewController.h"
 
+
 @interface ViewController ()
 
 @end
 
+
 @implementation ViewController
+
 @synthesize mapView;
 @synthesize coorCurent;
 @synthesize setRegionBtn;
@@ -69,9 +72,13 @@
 @synthesize tempShowPlaceInTableViewController;
 @synthesize oldRadian;
 @synthesize panelView;
+@synthesize photosScrollView;
 -(void)dealloc
 {
+    [photosScrollView release];
     [panelView release];
+    AbMob.delegate = nil;
+    [AbMob release];
     [tempDetailVenueViewController release];
     [tempShowPlaceInTableViewController release];
     [searchVenueController release];
@@ -105,8 +112,13 @@
     [coorCurent release];
     [super dealloc];
 }
+#pragma mark -
 #pragma mark App Life Cycle
-
+-(void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    NSLog(@"memory warning");
+}
 -(void)viewWillAppear:(BOOL)animated
 {
     
@@ -142,6 +154,11 @@
     [self.toolBar setBackgroundColor:[UIColor blackColor]];
     [self.toolBar setBarStyle:UIBarStyleBlackTranslucent];
     allowLoadingMap = YES;
+    if (popoverController) {
+        if (popoverController.popoverVisible) {
+            NSLog(@"size popOver :%f",popoverController.popoverContentSize.height);
+        }
+    }   
     [super viewWillAppear:animated];
 }
 - (void)viewDidLoad
@@ -151,6 +168,7 @@
     allowLoadingMap = YES;
     [self setRegion:self.coorCurent];
     self.panelView.hidden = YES;
+    currentAnnoSelected = nil;
 //    NSArray *array = self.mapView.gestureRecognizers;
 //    for(UIGestureRecognizer *get in array)
 //    {
@@ -160,10 +178,27 @@
 //        }
 //    }
     self.navigationController.navigationBarHidden = YES;
-    // add tab bar 
     [self installUncaughtExceptionHandler];
     currentFramePopOver = CGRectNull;
     currentAnnotation  =nil;
+    //if (![VIVUtilities isIpadDevice]) {
+    AbMob = [[GADBannerView alloc]
+                 initWithFrame:CGRectMake((self.view.frame.size.width - kGADAdSizeBanner.size.width), 0, kGADAdSizeBanner.size.width,
+                                          kGADAdSizeBanner.size.height)];
+    AbMob.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+    NSLog(@"frame Ab : %@",NSStringFromCGRect(AbMob.frame));
+//    [AbMob setBackgroundColor:[UIColor greenColor]];
+    AbMob.adUnitID = AdMob_ID;
+    AbMob.rootViewController = self;    
+    AbMob.hidden = YES;
+    [self.view addSubview:AbMob];
+    AbMob.delegate = self;
+        
+        
+    GADRequest *r = [[GADRequest alloc] init];
+    r.testing = YES;
+    [AbMob loadRequest:r];
+    //}
 //    popOverEnable = NO;
     
     
@@ -199,7 +234,7 @@
        [locationManager startUpdatingHeading];
         
     }
-    
+    allowLoadingMap = NO;
     
 }
 -(void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
@@ -207,6 +242,12 @@
 
     [self configApp];
     [self refreshALLCustomBadge];
+    allowLoadingMap = YES;
+//    if (photosScrollView) {
+//        [photosScrollView rotatePhotosScrollView];
+////        [photosScrollView willRotateToInterfaceOrientation:fromInterfaceOrientation duration:];
+////        [photosScrollView didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+//    }
 }
 -(void) configApp
 {
@@ -233,8 +274,14 @@
             [self.spinView setFrame:framefix];
         }
     }
+    if (AbMob) {
+        CGRect frame = AbMob.frame;
+        frame.origin.x = ([VIVUtilities getSizeDevice].width- frame.size.width);
+        AbMob.frame =frame;
+        
+    }
 }
-
+#pragma mark -
 #pragma mark MK MapView Delegate
 - (double)longitudeToPixelSpaceX:(double)longitude
 {
@@ -466,6 +513,7 @@
                 //                detailVenueViewController = nil;
 //                self.tempDetailVenueViewController = detailVenueViewController;
                 self.tempShowPlaceInTableViewController = showAllPlaceTableViewIpad;
+                self.tempDetailVenueViewController = nil;
                 [content release];
                 [arrayDataSource release];
                 [displayLabel release];
@@ -475,6 +523,22 @@
             
                 [self refreshALLCustomBadge];
                 [self.mapView deselectAnnotation:view.annotation animated:NO];
+                if (currentAnnoSelected) {
+                    for (int i =0; i < [showAllPlaceTableViewIpad.dataSourceTableView count]; i++) {
+                        NSDictionary *dictCompare = [showAllPlaceTableViewIpad.dataSourceTableView objectAtIndex:i];
+                        if (dictCompare) {
+                            if ([dictCompare isEqual:currentAnnoSelected.dictInfor]) {
+                                NSIndexPath *index =  [NSIndexPath indexPathForRow:i inSection:0];
+                                
+                                [showAllPlaceTableViewIpad.tableView selectRowAtIndexPath:index animated:YES scrollPosition:UITableViewScrollPositionNone];
+                                [showAllPlaceTableViewIpad.tableView.delegate tableView:showAllPlaceTableViewIpad.tableView didSelectRowAtIndexPath:index];
+                                currentAnnoSelected =nil;
+                                break;
+                            }
+                        }
+                    }
+                    
+                }
 
 
             }
@@ -522,7 +586,7 @@
                 UINavigationController *content = [[UINavigationController alloc] initWithRootViewController:detailVenueViewController];
                 self.popoverController = [[UIPopoverController alloc] initWithContentViewController:detailVenueViewController.navigationController];
                 popoverController.delegate = self;
-                CGSize popOverSize = [detailVenueViewController sizeInPopoverView];
+                CGSize popOverSize = CGSizeMake(330, 330);
                 popoverController.popoverContentSize = popOverSize; 
 //                CGRect frame = detailVenueViewController.view.frame;
 //                //        CGRect ff = self.view.bounds;
@@ -543,6 +607,7 @@
 //                [detailVenueViewController release];
 //                detailVenueViewController = nil;
                 self.tempDetailVenueViewController = detailVenueViewController;
+                self.tempShowPlaceInTableViewController = nil;
                 [content release];
                 [arrayDataSource release];
                 [displayLabel release];
@@ -950,21 +1015,47 @@
 -(void)searchPlaceInPopOver:(id)sender
 {
 //    popOverEnable = YES;
+
+
+    
+    BOOL needShowPopOver = NO;
     currentAnnotation = nil;//see confip App
     if (self.popoverController != nil) {
         if (popoverController.popoverVisible == YES) {
-            [popoverController dismissPopoverAnimated:YES];
-            [popoverController release];
-            popoverController = nil;
+            if (self.searchBtn.selected ==YES) {
+                needShowPopOver = NO;
+            }else {
+                needShowPopOver = YES;
+            }
+            if (needShowPopOver) {
+                [popoverController dismissPopoverAnimated:YES];
+                [popoverController release];
+                popoverController = nil;
+            }
+           
+        }else {
+            needShowPopOver = YES;
         }
         
     }else {
+        needShowPopOver = YES;
+    }
+    if ([sender isSelected]) {
+        //        [sender setImage:[UIImage imageNamed:@"btnLockCompass.png"] forState:UIControlStateNormal];
+        [sender setSelected:YES];
+    }else {
+        //        [sender setImage:[UIImage imageNamed:@"btnLockCompass_Selected.png"] forState:UIControlStateSelected];
+        [sender setSelected:YES];
+        
+    }
+    if (needShowPopOver) {
         if (!self.searchVenueController) {
             searchVenueController = [[SearchVenueViewController alloc]initWithNibName:@"SearchVenueViewController" bundle:nil];
             searchVenueController.delegate = self;
-            if (tempDataSourceTableView) {
-                searchVenueController.dataSourceTableView = tempDataSourceTableView;
-            }
+            
+        }
+        if (tempDataSourceTableView) {
+            searchVenueController.dataSourceTableView = tempDataSourceTableView;
         }
         if (!self.requestLocations) {
             requestLocations = [[SearchPlaceProvider alloc]init];
@@ -995,8 +1086,9 @@
         [popoverController presentPopoverFromRect:((UIButton *)sender).frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
         
         [content release];
+
     }
-   
+      
 
    
 }
@@ -1066,15 +1158,40 @@
 }
 -(void) showALLPlaceInPopOver:(id)sender
 {
-//    popOverEnable = YES;
+
+    
+
     currentAnnotation =nil;//see confip App
+    BOOL needShowPopOver = NO;
     if (self.popoverController != nil) {
         if (popoverController.popoverVisible == YES) {
-            [popoverController dismissPopoverAnimated:YES];
+            if (self.showAllPlaceBtn.selected ==YES) {
+                needShowPopOver = NO;
+            }else {
+                needShowPopOver = YES;
+            }
+            if (needShowPopOver) {
+                [popoverController dismissPopoverAnimated:YES];
+                [popoverController release];
+                popoverController = nil;
+            }
+            
+        }else {
+            needShowPopOver = YES;
         }
-        [popoverController release];
-        popoverController = nil;
+        
     }else {
+        needShowPopOver = YES;
+    }
+    if ([sender isSelected]) {
+        
+        [sender setSelected:YES];
+    }else {
+        
+        [sender setSelected:YES];
+        
+    }
+    if (needShowPopOver) {
         if (!self.placeTableViewControllerIpad) {
             placeTableViewControllerIpad = [[PlaceTableViewController alloc]initWithNibName:@"PlaceTableViewController" bundle:nil];
             placeTableViewControllerIpad.delegate =self;
@@ -1110,7 +1227,9 @@
         [popoverController presentPopoverFromRect:((UIButton *)sender).frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
         
         [content release];
+
     }
+
     
     
 
@@ -1465,10 +1584,36 @@
     }
         
 }
+
 #pragma mark Ipad Delegate
+-(void) addPhotosScroolView:(PhotosScrollViewController *)photosScroolView
+{
+    [self closePopOver];
+    [self presentModalViewController:photosScrollView animated:YES];
+//    [photosScrollView.view setTag:8000];
+//    CGRect framefix = self.view.frame;
+//    [photosScrollView.view setFrame:framefix];
+//    
+//    [self.view addSubview:photosScrollView.view];
+//    CGRect frame = photosScrollView.view.frame;
+//    frame.origin.y = [VIVUtilities getSizeDevice].height ;
+//    photosScrollView.view.frame = frame;
+//    [UIView beginAnimations:@"show scroll view photos" context:nil];
+//    frame.origin.y =0;
+//    photosScrollView.view.frame = frame;
+//    [UIView commitAnimations];
+}
+-(void)foundSubView
+{
+    UIView *subView = [self.view viewWithTag:8000];
+    if (subView) {
+        [self.view bringSubviewToFront:subView];
+    }
+}
 -(void) closePopOver
 {
-    if (self.popoverController) {
+  
+    if (popoverController) {
         if (popoverController.popoverVisible) {
             [popoverController dismissPopoverAnimated:YES];
             [popoverController release];
@@ -1498,6 +1643,8 @@
 }
 -(void) tempFunction
 {
+    [self refreshALLCustomBadge];
+    allowLoadingMap = YES;
     if (popoverController) {
         if (popoverController.popoverVisible) {
             [popoverController dismissPopoverAnimated:YES];
@@ -1506,20 +1653,31 @@
         }
         
     }else {
+        CGPoint annotationPoint = [self.mapView convertCoordinate:self.mapView.centerCoordinate toPointToView:self.view];
+        float boxDY=annotationPoint.y-13;
+        float boxDX=annotationPoint.x+10;
+        CGRect box = CGRectMake(boxDX,boxDY,5,5);
+        UILabel *displayLabel = [[UILabel alloc] initWithFrame:box];
+        currentFramePopOver = displayLabel.frame;
+//        [popoverController presentPopoverFromRect:displayLabel.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionLeft animated:YES];
+        
         if (tempDetailVenueViewController) {
+            [self closePopOver];
             popoverController =[[UIPopoverController alloc]initWithContentViewController:tempDetailVenueViewController.navigationController];
             popoverController.delegate = self;
-            CGSize popOverSize = [tempDetailVenueViewController sizeInPopoverView];
+            CGSize popOverSize = CGSizeMake(330, 330);
             popoverController.popoverContentSize = popOverSize; 
             
             [popoverController presentPopoverFromRect:currentFramePopOver inView:self.view permittedArrowDirections:UIPopoverArrowDirectionLeft animated:YES];
         }
+        
         if (tempShowPlaceInTableViewController) {
+            [self closePopOver];
             if (tempShowPlaceInTableViewController.navigationController==nil) {
                   UINavigationController *content = [[UINavigationController alloc] initWithRootViewController:tempShowPlaceInTableViewController];
                 popoverController =[[UIPopoverController alloc]initWithContentViewController:tempShowPlaceInTableViewController.navigationController];
                 popoverController.delegate = self;
-                CGSize popOverSize = [tempShowPlaceInTableViewController sizeInPopoverView];
+                CGSize popOverSize = CGSizeMake(330, 330);
                 popoverController.popoverContentSize = popOverSize; 
                 
                 [popoverController presentPopoverFromRect:currentFramePopOver inView:self.view permittedArrowDirections:UIPopoverArrowDirectionLeft animated:YES];
@@ -1537,7 +1695,10 @@
 -(void)rePresentPopOVerFromDetailVenue
 {
 //    [self performSelector:@selector(tempFunction) withObject:nil afterDelay:0.0];
+   
     [self tempFunction];
+   
+    
 }
 #pragma mark Ipad DetailVenue Delegate
 -(void)loadDetailPhotoFromPopOver:(PhotosScrollViewController *)photosScrollViewController
@@ -1550,7 +1711,9 @@
             popoverController = nil;
         }
     }
+    NSLog(@"loadDetailPhotoFromPopOver1:%i", photosScrollViewController.retainCount);
     [self pushPhotosViewControllerFromMainView:photosScrollViewController];
+    NSLog(@"loadDetailPhotoFromPopOver2:%i", photosScrollViewController.retainCount);
 }
 #pragma mark Ipad SearchVenue Delegate
 -(void)dismissPopOverFromSearchView
@@ -1588,10 +1751,10 @@
 {
     //not implement here
 }
--(void)loadDetailPhotos:(PhotosScrollViewController *)photosScrollView
+-(void)loadDetailPhotos:(PhotosScrollViewController *)photosScrollView12
 {
     [self closePopOver];
-    [self pushPhotosViewControllerFromMainView:photosScrollView];
+    [self pushPhotosViewControllerFromMainView:photosScrollView12];
     
 }
 //-(void) closeRequestImageProvider
@@ -1628,17 +1791,16 @@
 }
 -(void)pushPhotosViewControllerFromMainView:(PhotosScrollViewController *)photosViewController
 {
-//    CGRect frame = photosViewController.view.frame;
-//    [photosViewController.view setTag:TAG_PHOTOS_SCROLL_VIEW_CONTROLLER];
-//    [self.view addSubview:photosViewController.view];
-//    frame.origin.y = [VIVUtilities getSizeDevice].height ;
-//    photosViewController.view.frame = frame;
-//    [UIView beginAnimations:@"Show ScrollView " context:nil];
-//    frame.origin.y =0;
-//    photosViewController.view.frame = frame;
-//    [UIView commitAnimations];
+
+    allowLoadingMap = NO;
+    
     [self closePopOver];
-    [self presentModalViewController:photosViewController animated:YES];
+//    NSLog(@"loadDetailPhotosFromGroupPlace1:%i",photosViewController.retainCount);//4 ==1
+   [self presentModalViewController:photosViewController animated:YES];
+//    NSLog(@"loadDetailPhotosFromGroupPlace2:%i",photosViewController.retainCount);//5
+//    [self presentViewController:photosViewController animated:YES
+//    completion:nil];
+//    self.photosScrollView = photosViewController;
     CGFloat w =0;
     CGFloat h =0;
     for (int i =0; i< [photosViewController.arrayDetailView count]; i++) {
@@ -1688,7 +1850,9 @@
             popoverController = nil;
         }
     }
+    NSLog(@"loadDetailPhotosFromGroupPlace1:%i",photoScrollView.retainCount);
     [self pushPhotosViewControllerFromMainView:photoScrollView];
+    NSLog(@"loadDetailPhotosFromGroupPlace2:%i",photoScrollView.retainCount);
 }
 -(void)showDetailPlaceWithDictInfo:(NSDictionary *)dictInfo
 {
@@ -1714,7 +1878,12 @@
 -(void) pushDetailViewControllerFromSearchView:(NSDictionary *)dictDetail
 {
     allowLoadingMap = YES;
-    [self addDetailPlaceView:dictDetail];
+    if (dictDetail) {
+        [self addDetailPlaceView:dictDetail];
+    }
+       
+   
+    
 }
 #pragma mark ShowAllPlace Delegate
 -(void)closeRequestFromDetailView
@@ -1767,8 +1936,31 @@
         [requestDetaiLocation requestData];
 
     }else {
+        for (MKAnnotationView *anno in self.mapView.annotations) {
+            if ([anno isKindOfClass:[SingleAnnotation class]]) {
+                SingleAnnotation *tempAnno = (SingleAnnotation *)anno;
+                if ([tempAnno.dictInfor isEqual:dictInfo]) {
+                     currentAnnoSelected = tempAnno;
+                    [self.mapView selectAnnotation:tempAnno animated:YES];
+                   
+                    break;
+                }
+            }else if ([anno isKindOfClass:[GroupedAnnotation class]]) {
+                GroupedAnnotation *group = (GroupedAnnotation *) anno;
+                for(SingleAnnotation *singleAnno in group.listAnnotations)
+                {
+                    if ([singleAnno.dictInfor isEqual:dictInfo]) {
+                        currentAnnoSelected = singleAnno;
+                        [self.mapView selectAnnotation:group animated:YES];
+                        break;
+                    }
+                }
+            }
+        }
+
+        
         // remove detail exist
-        UIView *subView = [self.view viewWithTag:TAG_SHOW_DETAIL_VIEW];
+     /*   UIView *subView = [self.view viewWithTag:TAG_SHOW_DETAIL_VIEW];
         if (subView) {
             [subView removeFromSuperview];
             if (detailPlaceViewControllerIpad) {
@@ -1782,7 +1974,7 @@
             detailPlaceViewControllerIpad.delegate =self;
         } 
         CGRect frame = detailPlaceViewControllerIpad.view.frame;
-//        frame.size.height =self.view.frame.size.height;
+
         detailPlaceViewControllerIpad.view.frame = frame;
         [detailPlaceViewControllerIpad.view setTag:TAG_SHOW_DETAIL_VIEW];
         detailPlaceViewControllerIpad.dictInfo = dictInfo;
@@ -1790,10 +1982,6 @@
         [self.view addSubview:detailPlaceViewControllerIpad.view];
         [self.view bringSubviewToFront:detailPlaceViewControllerIpad.view];
         CGRect frameView = CGRectMake([VIVUtilities getSizeIpad].width, 0, 320, [VIVUtilities getSizeIpad].height);
-        //        self.view.frame = frameView;
-        //        CGRect frame = detailViewController.view.frame;
-        //        frame.origin.y =500;
-        //        frame.size.height = detailViewController.view.frame.size.height +44;
         detailPlaceViewControllerIpad.view.frame = frameView;
         [UIView beginAnimations:@"Show Detail Place" context:nil];
         if ([VIVUtilities getSizeIpad].width ==1004) {
@@ -1801,16 +1989,16 @@
         }else {
             frameView.origin.x =([VIVUtilities getSizeIpad].width-320);
         }
-//        frameView.origin.x =([VIVUtilities getSizeIpad].width-320);
+
         detailPlaceViewControllerIpad.view.frame = frameView;//
         [UIView commitAnimations];
         if (!requestDetaiLocation) {
             requestDetaiLocation = [[DetailPlaceProvider alloc]init];
             requestDetaiLocation.delegateDetail =self;
         }
-        //    [self startSpinner:self.view];
         [requestDetaiLocation configURLByItemId:[dictInfo objectForKey:@"id"]];
         [requestDetaiLocation requestData];
+      */
 
     }
 
@@ -2242,5 +2430,15 @@
     }
 }
 
+#pragma mark Ad Request Lifecycle Notifications
+- (void)adViewDidReceiveAd:(GADBannerView *)view
+{
+    AbMob.hidden = NO;
+}
 
+- (void)adView:(GADBannerView *)view
+didFailToReceiveAdWithError:(GADRequestError *)error
+{
+    AbMob.hidden = YES;
+}
 @end

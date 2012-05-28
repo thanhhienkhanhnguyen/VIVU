@@ -8,6 +8,10 @@
 
 #import <UIKit/UIKit.h>
 #import <MapKit/MapKit.h>
+#import <MediaPlayer/MediaPlayer.h>
+#import <MessageUI/MessageUI.h>
+#import <AudioToolbox/AudioToolbox.h>
+#import <SystemConfiguration/SystemConfiguration.h>
 #import <CoreLocation/CoreLocation.h>
 #include <QuartzCore/QuartzCore.h>
 #import "PlaceTableViewController.h"
@@ -25,10 +29,12 @@
 #import "DetailplaceViewControllerIpad.h"
 #import "DetailVenueViewControllerIpad.h"
 #import "SearchVenueViewController.h"
+#import "GADBannerView.h"
+
 
 @class SearchPlaceProvider;
 @class ImagesProfileProvider;
-@interface ViewController : UIViewController<MKMapViewDelegate,CLLocationManagerDelegate,UIPopoverControllerDelegate,SearchPlaceDelegate,ShowAllPlaceDelegate,DetailPlaceDelegate,DetailViewControllerDelegate,ImagesProfileProviderDelegate,SearchViewControllerDelegate,DetailViewControllerDelegateIpad,ShowPlaceTableDelegateIpad,PhotosViewControllerDelegate,PlaceTableViewDelagate,SearchVenueViewControllerDelegate,DetailVenueViewControllerDelegate,PhotosScrollViewDelegate>
+@interface ViewController : UIViewController<MKMapViewDelegate,CLLocationManagerDelegate,UIPopoverControllerDelegate,SearchPlaceDelegate,ShowAllPlaceDelegate,DetailPlaceDelegate,DetailViewControllerDelegate,ImagesProfileProviderDelegate,SearchViewControllerDelegate,DetailViewControllerDelegateIpad,ShowPlaceTableDelegateIpad,PhotosViewControllerDelegate,PlaceTableViewDelagate,SearchVenueViewControllerDelegate,DetailVenueViewControllerDelegate,PhotosScrollViewDelegate, GADBannerViewDelegate>
 {
     BOOL enableCompass;
     NSMutableArray *arrayImagesProvider;
@@ -37,6 +43,9 @@
     BOOL allowLoadingMap;
 //    BOOL popOverEnable;
     MKAnnotationView *currentAnnotation;
+    GADBannerView *AbMob;
+    SingleAnnotation *currentAnnoSelected;
+    PhotosScrollViewController *photosScrollView;
 
 }
 
@@ -44,10 +53,10 @@
 @property (nonatomic, retain) CLLocationManager *locationManager;
 @property (nonatomic, retain) CLLocation *coorCurent;
 @property (nonatomic, retain ) IBOutlet UIBarButtonItem *setRegionBtn;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *mapType;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *compassBtn;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *showAllPlaceBtn;
-@property (nonatomic, retain) IBOutlet UIBarButtonItem *searchBtn;
+@property (nonatomic, retain) IBOutlet UIButton *mapType;
+@property (nonatomic, retain) IBOutlet UIButton *compassBtn;
+@property (nonatomic, retain) IBOutlet UIButton *showAllPlaceBtn;
+@property (nonatomic, retain) IBOutlet UIButton *searchBtn;
 @property (nonatomic, retain) IBOutlet UIToolbar *toolBar;
 @property (nonatomic, retain) SearchPlaceProvider *requestLocations;
 @property (nonatomic, retain)  ShowAllPlaceViewController*placeTableViewController;
@@ -78,6 +87,9 @@
 @property (nonatomic, retain) ShowAllPlaceViewController_Ipad *tempShowPlaceInTableViewController;
 @property (nonatomic, assign) CGFloat oldRadian;
 @property (nonatomic, retain) IBOutlet UIView *panelView;
+@property (nonatomic, retain) PhotosScrollViewController *photosScrollView;
+
+
 
 
 
@@ -94,6 +106,10 @@
 -(IBAction) searchPlaceInPopOver:(id)sender;
 - (void)mapView:(MKMapView *)mapViewParam regionDidChangeAnimated:(BOOL)animated;
 -(void) refreshAllAnnotation;
+-(void) tempFunction;
+-(void) foundSubView;
+-(void) addPhotosScroolView:(PhotosScrollViewController*)photosScroolView;
+-(void)pushPhotosViewControllerFromMainView:(PhotosScrollViewController *)photosViewController;
 @end;
 
 @interface reUseable : ShowAllPlaceViewController

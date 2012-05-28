@@ -31,6 +31,7 @@
 
 -(void) configureView;
 -(IBAction)closeImagesViewController:(id)sender;
+-(void) rotatePhotosScrollView;
 
 
 @end
