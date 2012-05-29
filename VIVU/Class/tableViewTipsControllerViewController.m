@@ -36,7 +36,7 @@
 }
 -(void) backToDetailVenue:(id)sender
 {   
-    [self.navigationController popToRootViewControllerAnimated:YES];
+    [self.navigationController popViewControllerAnimated:YES];
     [self.delegate backToDetaiVenueViewController];
 }
 -(void)viewWillAppear:(BOOL)animated
@@ -72,7 +72,12 @@
             photosViewController = [[PhotosViewController alloc]initWithNibName:@"PhotosViewController" bundle:nil];
             photosViewController.delegate = self;
 //            photosViewController.delegatePhotosView = self;
-            photosViewController.isBelongToPopOver = YES;
+            
+            if ([VIVUtilities isIpadDevice]) {
+                photosViewController.isBelongToPopOver = YES;
+            }else {
+                photosViewController.isBelongToPopOver = NO;
+            }
         }
         NSMutableArray *arrayPhotos = [NSMutableArray arrayWithObject:dictImage];
         photosViewController.arrayPhotos = arrayPhotos;
@@ -81,7 +86,13 @@
                 [self.navigationController pushViewController:photosViewController animated:YES];
                 [photosViewController createBasicViewPhotos];
             }else {
-                
+                photosViewController.modalPresentationStyle = UIModalPresentationFullScreen;
+                photosViewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+                [self.delegate presentPhotosViewFromtips:photosViewController];
+                [photosViewController clearAllImageInView];
+                [photosViewController createBasicViewPhotos];
+               
+              
             }
            
         }

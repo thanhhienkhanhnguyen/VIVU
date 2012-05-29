@@ -7,19 +7,6 @@
          shouldBeEnabled = "Yes"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "Class/DetailImageViewController.m"
-         timestampString = "358940214.448344"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "213"
-         endingLineNumber = "213"
-         landmarkName = "-didRotateFromInterfaceOrientation:"
-         landmarkType = "5">
-      </FileBreakpoint>
-      <FileBreakpoint
-         shouldBeEnabled = "Yes"
-         ignoreCount = "0"
-         continueAfterRunningActions = "No"
          filePath = "VIVU/ShowAllPlaceViewController.m"
          timestampString = "359369289.339672"
          startingColumnNumber = "9223372036854775807"
@@ -34,11 +21,11 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "Class/DetailPlaceViewControllerViewController.m"
-         timestampString = "359522863.241608"
+         timestampString = "359950861.761146"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "763"
-         endingLineNumber = "763"
+         startingLineNumber = "770"
+         endingLineNumber = "770"
          landmarkName = "-closeView"
          landmarkType = "5">
       </FileBreakpoint>
@@ -53,6 +40,45 @@
          startingLineNumber = "52"
          endingLineNumber = "52"
          landmarkName = "-searchBarCancelButtonClicked:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "Yes"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "VIVU/ViewController.m"
+         timestampString = "359952613.162211"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "1800"
+         endingLineNumber = "1800"
+         landmarkName = "-pushMorePhotosViewControllerFromMainView:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "Yes"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "VIVU/ViewController.m"
+         timestampString = "359952613.162211"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "1624"
+         endingLineNumber = "1624"
+         landmarkName = "-foundSubView"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "Yes"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "VIVU/ViewController.m"
+         timestampString = "359952613.162211"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "1874"
+         endingLineNumber = "1874"
+         landmarkName = "-loadDetailPhotosFromGroupPlace:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

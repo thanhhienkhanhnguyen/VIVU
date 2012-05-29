@@ -291,6 +291,7 @@
   
     if (!tableViewTips) {
         tableViewTips = [[tableViewTipsControllerViewController alloc]initWithNibName:@"tableViewTipsControllerViewController" bundle:nil];
+        tableViewTips.delegate =self;
     }
     CGRect frameFix = viewTips.frame;
     frameFix.size.height = [arrayTips count]*60;
@@ -555,7 +556,13 @@
     
     
 }
-
+#pragma mark -
+#pragma mark Table View Tips Delegate
+-(void)presentPhotosViewFromtips:(PhotosViewController *)photosView
+{
+    [self presentModalViewController:photosView animated:YES];
+    
+}
 #pragma mark CloseRequestProvider Delegate
 -(void) closeRequestImageProvider
 {

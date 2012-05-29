@@ -12,10 +12,11 @@
 
 @protocol TableViewTipsDelegate <NSObject>
 
--(void)backToDetaiVenueViewController;
 @optional
+-(void)backToDetaiVenueViewController;
 -(void) loadDetailPhotosFromTips:(PhotosScrollViewController *)photosScrollView;
 -(void) rePresentPopOverFromTips;
+-(void) presentPhotosViewFromtips:(PhotosViewController*)photosView;
 
 @end
 

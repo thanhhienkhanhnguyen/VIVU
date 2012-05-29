@@ -48,7 +48,7 @@
     PhotosScrollViewController *photosScrollView;
 
 }
-
+@property (nonatomic, retain) SingleAnnotation *currentAnnoSelected;
 @property (nonatomic, retain) IBOutlet MKMapView *mapView;
 @property (nonatomic, retain) CLLocationManager *locationManager;
 @property (nonatomic, retain) CLLocation *coorCurent;

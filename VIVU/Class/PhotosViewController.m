@@ -280,13 +280,13 @@
 {
     [self clearAllImageInView];
     if (!isBelongToPopOver) {
-        CGRect frame = CGRectMake(320-50, 0, 50, 50);
-        UIButton *btnCloseShowMorePhotos = [[UIButton alloc]initWithFrame:frame];
-        [btnCloseShowMorePhotos setTitle:@"Close" forState:UIControlStateNormal];
-        [btnCloseShowMorePhotos addTarget:self action:@selector(closeView:) forControlEvents:UIControlEventTouchUpInside];
-        [btnCloseShowMorePhotos setImage:[UIImage imageNamed:@"btnMinus.png"] forState:UIControlStateNormal];
-        [self.scrollView addSubview:btnCloseShowMorePhotos];
-        [btnCloseShowMorePhotos release];
+//        CGRect frame = CGRectMake(320-50, 0, 50, 50);
+//        UIButton *btnCloseShowMorePhotos = [[UIButton alloc]initWithFrame:frame];
+//        [btnCloseShowMorePhotos setTitle:@"Close" forState:UIControlStateNormal];
+//        [btnCloseShowMorePhotos addTarget:self action:@selector(closeView:) forControlEvents:UIControlEventTouchUpInside];
+//        [btnCloseShowMorePhotos setImage:[UIImage imageNamed:@"btnMinus.png"] forState:UIControlStateNormal];
+//        [self.scrollView addSubview:btnCloseShowMorePhotos];
+//        [btnCloseShowMorePhotos release];
 
     }
     if ([arrayPhotos count]>0||([arrayPhotos count]<=4&& isBelongToPopOver)) {

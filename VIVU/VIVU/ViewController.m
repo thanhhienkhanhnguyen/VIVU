@@ -73,8 +73,10 @@
 @synthesize oldRadian;
 @synthesize panelView;
 @synthesize photosScrollView;
+@synthesize currentAnnoSelected;
 -(void)dealloc
 {
+    [currentAnnoSelected release];
     [photosScrollView release];
     [panelView release];
     AbMob.delegate = nil;
@@ -166,9 +168,19 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     allowLoadingMap = YES;
+    if ([VIVUtilities isIpadDevice]) {
+        CGRect frame= self.mapView.frame;
+        NSLog(@"%@",NSStringFromCGRect(frame));
+        CGFloat x = (frame.size.width - 768)/2;
+        CGFloat y = (frame.size.height-1004)/2;
+        CGRect framefix = CGRectMake(-x, -y, frame.size.width, frame.size.height);
+        self.mapView.frame = framefix;
+    }
+    
+    
     [self setRegion:self.coorCurent];
     self.panelView.hidden = YES;
-    currentAnnoSelected = nil;
+    self.currentAnnoSelected = nil;
 //    NSArray *array = self.mapView.gestureRecognizers;
 //    for(UIGestureRecognizer *get in array)
 //    {
@@ -198,6 +210,7 @@
     GADRequest *r = [[GADRequest alloc] init];
     r.testing = YES;
     [AbMob loadRequest:r];
+    
     //}
 //    popOverEnable = NO;
     
@@ -210,6 +223,7 @@
 {
     [super viewDidUnload];
     // Release any retained subviews of the main view.
+    NSLog(@"viewDidUnload");
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -532,7 +546,8 @@
                                 
                                 [showAllPlaceTableViewIpad.tableView selectRowAtIndexPath:index animated:YES scrollPosition:UITableViewScrollPositionNone];
                                 [showAllPlaceTableViewIpad.tableView.delegate tableView:showAllPlaceTableViewIpad.tableView didSelectRowAtIndexPath:index];
-                                currentAnnoSelected =nil;
+                               
+                                self.currentAnnoSelected =nil;
                                 break;
                             }
                         }
@@ -584,7 +599,7 @@
 //                [detailVenueViewController.tableView reloadData];
 //                [detailVenueViewController configureView];
                 UINavigationController *content = [[UINavigationController alloc] initWithRootViewController:detailVenueViewController];
-                self.popoverController = [[UIPopoverController alloc] initWithContentViewController:detailVenueViewController.navigationController];
+                popoverController = [[UIPopoverController alloc] initWithContentViewController:detailVenueViewController.navigationController];
                 popoverController.delegate = self;
                 CGSize popOverSize = CGSizeMake(330, 330);
                 popoverController.popoverContentSize = popOverSize; 
@@ -1066,7 +1081,7 @@
             [requestLocations requestData];
         }
         UINavigationController *content = [[UINavigationController alloc] initWithRootViewController:searchVenueController];
-        self.popoverController = [[UIPopoverController alloc] initWithContentViewController:searchVenueController.navigationController];
+        popoverController = [[UIPopoverController alloc] initWithContentViewController:searchVenueController.navigationController];
         popoverController.passthroughViews = [[[NSArray alloc] initWithObjects:self.view, nil] autorelease];
         
         popoverController.delegate = self;
@@ -1613,7 +1628,7 @@
 -(void) closePopOver
 {
   
-    if (popoverController) {
+    if (self.popoverController) {
         if (popoverController.popoverVisible) {
             [popoverController dismissPopoverAnimated:YES];
             [popoverController release];
@@ -1663,12 +1678,18 @@
         
         if (tempDetailVenueViewController) {
             [self closePopOver];
-            popoverController =[[UIPopoverController alloc]initWithContentViewController:tempDetailVenueViewController.navigationController];
-            popoverController.delegate = self;
-            CGSize popOverSize = CGSizeMake(330, 330);
-            popoverController.popoverContentSize = popOverSize; 
+            if (!popoverController) {
+                 UINavigationController *content = [[UINavigationController alloc] initWithRootViewController:tempDetailVenueViewController];
+                popoverController =[[UIPopoverController alloc]initWithContentViewController:tempDetailVenueViewController.navigationController];
+                popoverController.delegate = self;
+                CGSize popOverSize = CGSizeMake(330, 330);
+                popoverController.popoverContentSize = popOverSize; 
+                
+                [popoverController presentPopoverFromRect:currentFramePopOver inView:self.view permittedArrowDirections:UIPopoverArrowDirectionLeft animated:YES];
+                [content release];
+            }
             
-            [popoverController presentPopoverFromRect:currentFramePopOver inView:self.view permittedArrowDirections:UIPopoverArrowDirectionLeft animated:YES];
+          
         }
         
         if (tempShowPlaceInTableViewController) {
@@ -1940,7 +1961,7 @@
             if ([anno isKindOfClass:[SingleAnnotation class]]) {
                 SingleAnnotation *tempAnno = (SingleAnnotation *)anno;
                 if ([tempAnno.dictInfor isEqual:dictInfo]) {
-                     currentAnnoSelected = tempAnno;
+                     self.currentAnnoSelected = tempAnno;
                     [self.mapView selectAnnotation:tempAnno animated:YES];
                    
                     break;
@@ -1950,7 +1971,7 @@
                 for(SingleAnnotation *singleAnno in group.listAnnotations)
                 {
                     if ([singleAnno.dictInfor isEqual:dictInfo]) {
-                        currentAnnoSelected = singleAnno;
+                        self.currentAnnoSelected = singleAnno;
                         [self.mapView selectAnnotation:group animated:YES];
                         break;
                     }
